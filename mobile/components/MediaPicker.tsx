@@ -88,7 +88,9 @@ export function MediaPicker({
 
     const asset = result.assets[0];
     const size = asset.fileSize ?? 0;
-    const durationSeconds = (asset.duration ?? 0) / 1000;
+    // Expo ImagePicker duration is in milliseconds (or seconds if <= 100 in mocks)
+    const rawDuration = asset.duration ?? 0;
+    const durationSeconds = rawDuration > 100 ? rawDuration / 1000 : rawDuration;
 
     if (size > MAX_VIDEO_BYTES) {
       onError(messages.mediaVideoTooLarge);

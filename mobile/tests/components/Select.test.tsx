@@ -1,9 +1,8 @@
 /**
  * T-C-3: Select component tests.
- * Opens, lists options, selecting calls onChange.
  */
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, screen, fireEvent } from '@testing-library/react-native';
 import { Select } from '../../components/Select';
 
 const OPTIONS = [
@@ -14,7 +13,7 @@ const OPTIONS = [
 
 describe('T-C-3: Select', () => {
   it('renders placeholder initially', () => {
-    const { getByText } = render(
+    render(
       <Select
         options={OPTIONS}
         value={null}
@@ -22,32 +21,32 @@ describe('T-C-3: Select', () => {
         placeholder="Select organisation"
       />,
     );
-    expect(getByText('Select organisation')).toBeTruthy();
+    expect(screen.getByText('Select organisation')).toBeTruthy();
   });
 
   it('opens and shows all options when pressed', () => {
-    const { getByTestId, getByText } = render(
+    render(
       <Select options={OPTIONS} value={null} onChange={() => {}} placeholder="Select" testID="org-select" />,
     );
-    fireEvent.press(getByTestId('org-select-trigger'));
-    OPTIONS.forEach((o) => expect(getByText(o.label)).toBeTruthy());
+    fireEvent.press(screen.getByTestId('org-select-trigger'));
+    OPTIONS.forEach((o) => expect(screen.getByText(o.label)).toBeTruthy());
   });
 
   it('calls onChange with the selected value', () => {
     const onChange = jest.fn();
-    const { getByTestId, getByText } = render(
+    render(
       <Select options={OPTIONS} value={null} onChange={onChange} placeholder="Select" testID="org-select2" />,
     );
-    fireEvent.press(getByTestId('org-select2-trigger'));
-    fireEvent.press(getByText('Metrobus'));
+    fireEvent.press(screen.getByTestId('org-select2-trigger'));
+    fireEvent.press(screen.getByText('Metrobus'));
     expect(onChange).toHaveBeenCalledWith('metrobus');
   });
 
   it('shows "Other/Unregistered" as an option', () => {
-    const { getByTestId, getByText } = render(
+    render(
       <Select options={OPTIONS} value={null} onChange={() => {}} placeholder="Select" testID="org-select3" />,
     );
-    fireEvent.press(getByTestId('org-select3-trigger'));
-    expect(getByText('Other/Unregistered')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('org-select3-trigger'));
+    expect(screen.getByText('Other/Unregistered')).toBeTruthy();
   });
 });

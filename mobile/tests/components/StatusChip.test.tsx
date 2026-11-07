@@ -1,9 +1,9 @@
 /**
  * T-C-5: StatusChip component tests.
- * Each status shows its text and micro style.
  */
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
+import { render, screen } from '@testing-library/react-native';
 import { StatusChip } from '../../components/StatusChip';
 import { tokens } from '../../theme/tokens';
 
@@ -18,16 +18,11 @@ const STATUSES = [
 describe('T-C-5: StatusChip', () => {
   STATUSES.forEach((status) => {
     it(`renders "${status}" with micro text style`, () => {
-      const { getByText, getByTestId } = render(
-        <StatusChip status={status} testID={`chip-${status}`} />,
-      );
-      expect(getByText(status)).toBeTruthy();
-      const label = getByTestId(`chip-${status}-label`);
-      expect(label.props.style).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ fontSize: tokens.font.micro.size }),
-        ]),
-      );
+      render(<StatusChip status={status} testID={`chip-${status}`} />);
+      expect(screen.getByText(status)).toBeTruthy();
+      const label = screen.getByTestId(`chip-${status}-label`);
+      const flat = StyleSheet.flatten(label.props.style);
+      expect(flat.fontSize).toBe(tokens.font.micro.size);
     });
   });
 });

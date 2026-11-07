@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, NativeSyntheticEvent } from 'react-native';
 import { tokens } from '../theme/tokens';
 import { messages } from '../constants/messages';
 
@@ -13,11 +13,10 @@ interface OtpInputProps {
 }
 
 export function OtpInput({ value, onChange, onResend, resendCooldownSeconds }: OtpInputProps) {
-  const inputs = useRef<(TextInput | null)[]>([]);
+  const inputs = useRef<(any | null)[]>([]);
   const digits = value.padEnd(OTP_LENGTH, '').slice(0, OTP_LENGTH).split('');
 
   const handleChange = (text: string, index: number) => {
-    // Handle paste: if text has multiple characters, fill all boxes
     if (text.length > 1) {
       const pasted = text.replace(/\D/g, '').slice(0, OTP_LENGTH);
       onChange(pasted);
@@ -34,7 +33,7 @@ export function OtpInput({ value, onChange, onResend, resendCooldownSeconds }: O
   };
 
   const handleKeyPress = (
-    e: NativeSyntheticEvent<TextInputKeyPressEventData>,
+    e: NativeSyntheticEvent<{ key: string }>,
     index: number,
   ) => {
     if (e.nativeEvent.key === 'Backspace' && !digits[index] && index > 0) {

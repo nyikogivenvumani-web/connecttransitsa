@@ -1,14 +1,13 @@
 /**
  * T-C-14: ConfirmModal component tests.
- * Confirm and Cancel call their handlers.
  */
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, screen, fireEvent } from '@testing-library/react-native';
 import { ConfirmModal } from '../../components/ConfirmModal';
 
 describe('T-C-14: ConfirmModal', () => {
   it('renders title and message', () => {
-    const { getByText } = render(
+    render(
       <ConfirmModal
         visible
         title="Delete account"
@@ -18,13 +17,13 @@ describe('T-C-14: ConfirmModal', () => {
         onCancel={() => {}}
       />,
     );
-    expect(getByText('Delete account')).toBeTruthy();
-    expect(getByText('This cannot be undone.')).toBeTruthy();
+    expect(screen.getByText('Delete account')).toBeTruthy();
+    expect(screen.getByText('This cannot be undone.')).toBeTruthy();
   });
 
   it('calls onConfirm when confirm button is pressed', () => {
     const onConfirm = jest.fn();
-    const { getByTestId } = render(
+    render(
       <ConfirmModal
         visible
         title="Log out"
@@ -34,13 +33,13 @@ describe('T-C-14: ConfirmModal', () => {
         onCancel={() => {}}
       />,
     );
-    fireEvent.press(getByTestId('confirm-modal-confirm'));
+    fireEvent.press(screen.getByTestId('confirm-modal-confirm'));
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });
 
   it('calls onCancel when cancel button is pressed', () => {
     const onCancel = jest.fn();
-    const { getByTestId } = render(
+    render(
       <ConfirmModal
         visible
         title="Log out"
@@ -50,12 +49,12 @@ describe('T-C-14: ConfirmModal', () => {
         onCancel={onCancel}
       />,
     );
-    fireEvent.press(getByTestId('confirm-modal-cancel'));
+    fireEvent.press(screen.getByTestId('confirm-modal-cancel'));
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it('is not visible when visible=false', () => {
-    const { queryByTestId } = render(
+    render(
       <ConfirmModal
         visible={false}
         title="Log out"
@@ -65,6 +64,6 @@ describe('T-C-14: ConfirmModal', () => {
         onCancel={() => {}}
       />,
     );
-    expect(queryByTestId('confirm-modal-confirm')).toBeNull();
+    expect(screen.queryByTestId('confirm-modal-confirm')).toBeNull();
   });
 });

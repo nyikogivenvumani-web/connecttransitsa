@@ -1,14 +1,11 @@
 /**
  * T-C-10: MediaPicker component tests.
- * Rejects: 4th photo, 2nd video, photo >5MB, video >25MB or >30s, audio >10MB or >60s.
- * Uses exact PRD messages.
  */
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import { MediaPicker } from '../../components/MediaPicker';
 import { messages } from '../../constants/messages';
 
-// Mock expo-image-picker and expo-audio
 jest.mock('expo-image-picker', () => ({
   requestMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
   launchImageLibraryAsync: jest.fn(),
@@ -27,7 +24,7 @@ jest.mock('expo-audio', () => ({
 describe('T-C-10: MediaPicker', () => {
   it('rejects a 4th photo with correct message', async () => {
     const onError = jest.fn();
-    const { getByTestId } = render(
+    render(
       <MediaPicker
         photos={[
           { uri: 'a.jpg', size: 100 },
@@ -44,14 +41,14 @@ describe('T-C-10: MediaPicker', () => {
       />,
     );
     await act(async () => {
-      fireEvent.press(getByTestId('media-picker-add-photo'));
+      fireEvent.press(screen.getByTestId('media-picker-add-photo'));
     });
     expect(onError).toHaveBeenCalledWith(messages.mediaMaxPhotos);
   });
 
   it('rejects a 2nd video with correct message', async () => {
     const onError = jest.fn();
-    const { getByTestId } = render(
+    render(
       <MediaPicker
         photos={[]}
         videos={[{ uri: 'v.mp4', size: 100, durationSeconds: 5 }]}
@@ -64,7 +61,7 @@ describe('T-C-10: MediaPicker', () => {
       />,
     );
     await act(async () => {
-      fireEvent.press(getByTestId('media-picker2-add-video'));
+      fireEvent.press(screen.getByTestId('media-picker2-add-video'));
     });
     expect(onError).toHaveBeenCalledWith(messages.mediaMaxVideos);
   });
@@ -76,7 +73,7 @@ describe('T-C-10: MediaPicker', () => {
       assets: [{ uri: 'big.jpg', fileSize: 6 * 1024 * 1024 }],
     });
     const onError = jest.fn();
-    const { getByTestId } = render(
+    render(
       <MediaPicker
         photos={[]}
         videos={[]}
@@ -89,7 +86,7 @@ describe('T-C-10: MediaPicker', () => {
       />,
     );
     await act(async () => {
-      fireEvent.press(getByTestId('media-picker3-add-photo'));
+      fireEvent.press(screen.getByTestId('media-picker3-add-photo'));
     });
     expect(onError).toHaveBeenCalledWith(messages.mediaPhotoTooLarge);
   });
@@ -101,7 +98,7 @@ describe('T-C-10: MediaPicker', () => {
       assets: [{ uri: 'big.mp4', fileSize: 26 * 1024 * 1024, duration: 10 }],
     });
     const onError = jest.fn();
-    const { getByTestId } = render(
+    render(
       <MediaPicker
         photos={[]}
         videos={[]}
@@ -114,7 +111,7 @@ describe('T-C-10: MediaPicker', () => {
       />,
     );
     await act(async () => {
-      fireEvent.press(getByTestId('media-picker4-add-video'));
+      fireEvent.press(screen.getByTestId('media-picker4-add-video'));
     });
     expect(onError).toHaveBeenCalledWith(messages.mediaVideoTooLarge);
   });
@@ -126,7 +123,7 @@ describe('T-C-10: MediaPicker', () => {
       assets: [{ uri: 'long.mp4', fileSize: 1024, duration: 35 }],
     });
     const onError = jest.fn();
-    const { getByTestId } = render(
+    render(
       <MediaPicker
         photos={[]}
         videos={[]}
@@ -139,7 +136,7 @@ describe('T-C-10: MediaPicker', () => {
       />,
     );
     await act(async () => {
-      fireEvent.press(getByTestId('media-picker5-add-video'));
+      fireEvent.press(screen.getByTestId('media-picker5-add-video'));
     });
     expect(onError).toHaveBeenCalledWith(messages.mediaVideoTooLong);
   });

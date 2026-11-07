@@ -15,9 +15,9 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home', tabBarTestID: 'tab-item-home' }} />
-      <Tabs.Screen name="track" options={{ title: 'Track', tabBarTestID: 'tab-item-track' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings', tabBarTestID: 'tab-item-settings' }} />
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="track" options={{ title: 'Track' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
     </Tabs>
   );
 }
