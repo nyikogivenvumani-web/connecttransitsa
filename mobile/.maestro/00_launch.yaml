@@ -1,0 +1,5 @@
+appId: com.connecttransit.sa
+---
+- launchApp
+- assertVisible:
+    id: "screen-s1"

@@ -1,0 +1,32 @@
+# Environment files – never commit
+.env
+.env.local
+supabase/.env.local
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Expo / React Native
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+
+# Next.js
+web/.next/
+web/out/
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Test coverage
+coverage/
