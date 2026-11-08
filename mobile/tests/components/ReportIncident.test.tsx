@@ -95,7 +95,7 @@ beforeEach(() => {
 describe('HomeScreen – S2 (Phase 4 additions)', () => {
   it('T-S2-2a shows the Report Incident button', async () => {
     (reportsApi.fetchMyCases as jest.Mock).mockResolvedValue([]);
-    const { getByTestId } = render(<HomeScreen />);
+    const { getByTestId } = await render(<HomeScreen />);
     expect(getByTestId('home-report-btn')).toBeTruthy();
   });
 
@@ -105,7 +105,7 @@ describe('HomeScreen – S2 (Phase 4 additions)', () => {
       { id: '2', case_ref: 'TC-2026-0002', status: 'Under Review', vehicle_plate: 'CA 2 GP', category: 'Harassment', created_at: new Date().toISOString() },
       { id: '3', case_ref: 'TC-2026-0003', status: 'Resolved', vehicle_plate: 'CA 3 GP', category: 'Overcharging', created_at: new Date().toISOString() },
     ]);
-    const { findByTestId } = render(<HomeScreen />);
+    const { findByTestId } = await render(<HomeScreen />);
     expect(await findByTestId('home-case-card-TC-2026-0001')).toBeTruthy();
     expect(await findByTestId('home-case-card-TC-2026-0002')).toBeTruthy();
     expect(await findByTestId('home-case-card-TC-2026-0003')).toBeTruthy();
@@ -113,7 +113,7 @@ describe('HomeScreen – S2 (Phase 4 additions)', () => {
 
   it('T-S2-2c shows empty state when no cases', async () => {
     (reportsApi.fetchMyCases as jest.Mock).mockResolvedValue([]);
-    const { findByTestId } = render(<HomeScreen />);
+    const { findByTestId } = await render(<HomeScreen />);
     expect(await findByTestId('home-empty-state')).toBeTruthy();
   });
 });
@@ -125,28 +125,28 @@ describe('ReportIncidentScreen – S3', () => {
   // Helper: fill the minimum required fields
   async function fillRequiredFields(getByTestId: ReturnType<typeof render>['getByTestId']) {
     // Org select: press trigger then pick first option
-    fireEvent.press(getByTestId('report-org-select-trigger'));
-    fireEvent.press(getByTestId('report-org-option-org-1'));
+    await fireEvent.press(getByTestId('report-org-select-trigger'));
+    await fireEvent.press(getByTestId('report-org-option-org-1'));
 
     // Plate
-    fireEvent.changeText(getByTestId('report-plate-input'), 'CA 123 GP');
+    await fireEvent.changeText(getByTestId('report-plate-input'), 'CA 123 GP');
 
     // Category select
-    fireEvent.press(getByTestId('report-category-select-trigger'));
-    fireEvent.press(getByTestId('report-category-option-Reckless & Negligent Driving'));
+    await fireEvent.press(getByTestId('report-category-select-trigger'));
+    await fireEvent.press(getByTestId('report-category-option-Reckless & Negligent Driving'));
 
     // Description
-    fireEvent.changeText(
+    await fireEvent.changeText(
       getByTestId('report-description-input'),
       'Swerved between lanes at speed.',
     );
   }
 
   it('T-US1-1 valid report submits → navigates to S7 with case ref', async () => {
-    const { getByTestId } = render(<ReportIncidentScreen />);
+    const { getByTestId } = await render(<ReportIncidentScreen />);
     await fillRequiredFields(getByTestId);
 
-    fireEvent.press(getByTestId('report-submit-btn'));
+    await fireEvent.press(getByTestId('report-submit-btn'));
 
     await waitFor(() => {
       expect(reportsApi.submitReport).toHaveBeenCalledWith(
@@ -163,29 +163,29 @@ describe('ReportIncidentScreen – S3', () => {
   });
 
   it('T-US1-2 missing plate → red border and error message', async () => {
-    const { getByTestId, findByText } = render(<ReportIncidentScreen />);
+    const { getByTestId, findByText } = await render(<ReportIncidentScreen />);
 
     // Select org and category but leave plate blank
-    fireEvent.press(getByTestId('report-org-select-trigger'));
-    fireEvent.press(getByTestId('report-org-option-org-1'));
-    fireEvent.press(getByTestId('report-category-select-trigger'));
-    fireEvent.press(getByTestId('report-category-option-Reckless & Negligent Driving'));
-    fireEvent.changeText(getByTestId('report-description-input'), 'Some description');
+    await fireEvent.press(getByTestId('report-org-select-trigger'));
+    await fireEvent.press(getByTestId('report-org-option-org-1'));
+    await fireEvent.press(getByTestId('report-category-select-trigger'));
+    await fireEvent.press(getByTestId('report-category-option-Reckless & Negligent Driving'));
+    await fireEvent.changeText(getByTestId('report-description-input'), 'Some description');
 
-    fireEvent.press(getByTestId('report-submit-btn'));
+    await fireEvent.press(getByTestId('report-submit-btn'));
 
     expect(await findByText('Vehicle registration plate is required')).toBeTruthy();
     expect(reportsApi.submitReport).not.toHaveBeenCalled();
   });
 
   it('T-US1-3 category "Other" shows custom text field', async () => {
-    const { getByTestId, queryByTestId } = render(<ReportIncidentScreen />);
+    const { getByTestId, queryByTestId } = await render(<ReportIncidentScreen />);
 
     // Before selecting "Other" — custom field should not exist
     expect(queryByTestId('report-custom-category-input')).toBeNull();
 
-    fireEvent.press(getByTestId('report-category-select-trigger'));
-    fireEvent.press(getByTestId('report-category-option-Other'));
+    await fireEvent.press(getByTestId('report-category-select-trigger'));
+    await fireEvent.press(getByTestId('report-category-option-Other'));
 
     expect(getByTestId('report-custom-category-input')).toBeTruthy();
   });
@@ -195,9 +195,9 @@ describe('ReportIncidentScreen – S3', () => {
       new Error("You're sending reports too quickly. Try again later."),
     );
 
-    const { getByTestId, findByText } = render(<ReportIncidentScreen />);
+    const { getByTestId, findByText } = await render(<ReportIncidentScreen />);
     await fillRequiredFields(getByTestId);
-    fireEvent.press(getByTestId('report-submit-btn'));
+    await fireEvent.press(getByTestId('report-submit-btn'));
 
     expect(
       await findByText("You're sending reports too quickly. Try again later."),
@@ -211,9 +211,9 @@ describe('ReportIncidentScreen – S3', () => {
       new Error('Network connection lost. Your report draft has been saved locally.'),
     );
 
-    const { getByTestId, findByText } = render(<ReportIncidentScreen />);
+    const { getByTestId, findByText } = await render(<ReportIncidentScreen />);
     await fillRequiredFields(getByTestId);
-    fireEvent.press(getByTestId('report-submit-btn'));
+    await fireEvent.press(getByTestId('report-submit-btn'));
 
     expect(
       await findByText('Network connection lost. Your report draft has been saved locally.'),
@@ -221,18 +221,18 @@ describe('ReportIncidentScreen – S3', () => {
   });
 
   it('T-EDGE-2 "Other/Unregistered" org shows unlisted entity name input', async () => {
-    const { getByTestId, queryByTestId } = render(<ReportIncidentScreen />);
+    const { getByTestId, queryByTestId } = await render(<ReportIncidentScreen />);
 
     expect(queryByTestId('report-unlisted-entity-input')).toBeNull();
 
-    fireEvent.press(getByTestId('report-org-select-trigger'));
-    fireEvent.press(getByTestId('report-org-option-org-oversight'));
+    await fireEvent.press(getByTestId('report-org-select-trigger'));
+    await fireEvent.press(getByTestId('report-org-option-org-oversight'));
 
     expect(getByTestId('report-unlisted-entity-input')).toBeTruthy();
   });
 
   it('T-EDGE-3 submit is disabled while an over-size file error is active', async () => {
-    const { getByTestId } = render(<ReportIncidentScreen />);
+    const { getByTestId } = await render(<ReportIncidentScreen />);
 
     // Trigger a media error (component exposes a way to set error from outside via
     // the onError prop passed to MediaPicker; we simulate pressing the add-photo
@@ -243,7 +243,7 @@ describe('ReportIncidentScreen – S3', () => {
       assets: [{ uri: 'file://big.jpg', fileSize: 6 * 1024 * 1024 }],
     });
 
-    fireEvent.press(getByTestId('report-media-picker-add-photo'));
+    await fireEvent.press(getByTestId('report-media-picker-add-photo'));
 
     await waitFor(() => {
       const btn = getByTestId('report-submit-btn');
@@ -255,7 +255,7 @@ describe('ReportIncidentScreen – S3', () => {
     const Location = require('expo-location');
     Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: 'denied' });
 
-    const { getByTestId, queryByTestId } = render(<ReportIncidentScreen />);
+    const { getByTestId, queryByTestId } = await render(<ReportIncidentScreen />);
     await waitFor(() => {
       expect(getByTestId('report-location-text-input')).toBeTruthy();
     });
@@ -263,12 +263,12 @@ describe('ReportIncidentScreen – S3', () => {
   });
 
   it('T-S3-2 leaving with unsaved input shows ConfirmModal', async () => {
-    const { getByTestId, findByTestId } = render(<ReportIncidentScreen />);
+    const { getByTestId, findByTestId } = await render(<ReportIncidentScreen />);
 
-    fireEvent.changeText(getByTestId('report-plate-input'), 'CA 1 GP');
+    await fireEvent.changeText(getByTestId('report-plate-input'), 'CA 1 GP');
 
     // Simulate hardware back / router.back()
-    fireEvent.press(getByTestId('report-back-btn'));
+    await fireEvent.press(getByTestId('report-back-btn'));
 
     expect(await findByTestId('confirm-modal-confirm')).toBeTruthy();
   });
@@ -278,13 +278,13 @@ describe('ReportIncidentScreen – S3', () => {
 // S7 Report Success
 // ─────────────────────────────────────────────────────────────────────────
 describe('ReportSuccessScreen – S7', () => {
-  it('T-S7-1 shows case ref, PRD tone message, and Done button', () => {
+  it('T-S7-1 shows case ref, PRD tone message, and Done button', async () => {
     jest.mock('expo-router', () => ({
       useRouter: () => ({ replace: mockReplace }),
       useLocalSearchParams: () => ({ case_ref: 'TC-2026-0042' }),
     }));
 
-    const { getByTestId, getByText } = render(<ReportSuccessScreen />);
+    const { getByTestId, getByText } = await render(<ReportSuccessScreen />);
 
     expect(getByTestId('success-case-ref')).toBeTruthy();
     expect(

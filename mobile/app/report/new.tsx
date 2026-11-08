@@ -175,6 +175,7 @@ export default function ReportIncidentScreen() {
           locationLng,
           locationText: locationText || undefined,
           sapsCase: sapsCase || undefined,
+          mediaJson: JSON.stringify({ photos, videos, audio }),
         });
       }
 

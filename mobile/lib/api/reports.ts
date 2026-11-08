@@ -61,58 +61,49 @@ export async function fetchMyCases(): Promise<CaseSummary[]> {
   return data as CaseSummary[];
 }
 
+function isNetworkError(msg: string): boolean {
+  return /NetworkError|Failed to fetch|Network request failed|network|offline/i.test(msg);
+}
+
+async function uploadOne(
+  reportId: string,
+  kind: 'photo' | 'video' | 'audio',
+  uri: string,
+  ext: string,
+  contentType: string,
+  size: number,
+  durationSeconds: number,
+  index: number,
+): Promise<void> {
+  // Phase 2 storage policy: object name must be `{report_id}/{file}`.
+  const path = `${reportId}/${kind}-${index}-${Date.now()}.${ext}`;
+  const blob = await (await fetch(uri)).blob();
+  const { error } = await supabase.storage
+    .from('evidence')
+    .upload(path, blob, { contentType });
+  if (error) throw error;
+  const { error: rowError } = await supabase.from('report_media').insert({
+    report_id: reportId,
+    kind,
+    storage_path: path,
+    size_bytes: size,
+    duration_seconds: durationSeconds,
+  });
+  if (rowError) throw rowError;
+}
+
 /**
  * OP7 – Submit an incident report.
- * 1. Upload media files to evidence/{id}/…
- * 2. Insert the report row
- * 3. Insert report_media rows
- * On insert failure, removes the uploaded files.
+ * 1. Insert the report row (storage policy requires the report to exist).
+ * 2. Upload each media file to evidence/{report_id}/… and insert its report_media row.
+ * If the report insert fails nothing is uploaded. If a media upload fails after the
+ * report exists, the report is kept and `mediaFailed` is returned (the client cannot
+ * delete storage objects under the Phase 2 policy).
  */
 export async function submitReport(
   params: SubmitReportParams,
-): Promise<{ case_ref: string }> {
-  const uploadedPaths: string[] = [];
-
+): Promise<{ case_ref: string; mediaFailed?: boolean }> {
   try {
-    // Upload photos
-    for (const photo of params.photos ?? []) {
-      const ext = photo.uri.split('.').pop() ?? 'jpg';
-      const path = `evidence/${params.id}/photo-${Date.now()}.${ext}`;
-      const response = await fetch(photo.uri);
-      const blob = await response.blob();
-      const { error } = await supabase.storage
-        .from('evidence')
-        .upload(path, blob, { contentType: 'image/jpeg' });
-      if (error) throw error;
-      uploadedPaths.push(path);
-    }
-
-    // Upload videos
-    for (const video of params.videos ?? []) {
-      const ext = video.uri.split('.').pop() ?? 'mp4';
-      const path = `evidence/${params.id}/video-${Date.now()}.${ext}`;
-      const response = await fetch(video.uri);
-      const blob = await response.blob();
-      const { error } = await supabase.storage
-        .from('evidence')
-        .upload(path, blob, { contentType: 'video/mp4' });
-      if (error) throw error;
-      uploadedPaths.push(path);
-    }
-
-    // Upload audio
-    if (params.audio) {
-      const path = `evidence/${params.id}/audio-${Date.now()}.m4a`;
-      const response = await fetch(params.audio.uri);
-      const blob = await response.blob();
-      const { error } = await supabase.storage
-        .from('evidence')
-        .upload(path, blob, { contentType: 'audio/m4a' });
-      if (error) throw error;
-      uploadedPaths.push(path);
-    }
-
-    // Insert report row
     const { data, error: insertError } = await supabase
       .from('reports')
       .insert({
@@ -132,47 +123,51 @@ export async function submitReport(
       .select('case_ref')
       .single();
 
-    if (insertError) throw insertError;
-
-    // Insert report_media rows
-    const mediaRows = [
-      ...(params.photos ?? []).map((_, i) => ({
-        report_id: params.id,
-        kind: 'photo',
-        storage_path: uploadedPaths[i],
-        size_bytes: params.photos![i].size,
-      })),
-    ];
-    if (mediaRows.length > 0) {
-      await supabase.from('report_media').insert(mediaRows);
+    let caseRef: string;
+    if (insertError) {
+      // Retry after a lost response: the report may already exist.
+      if ((insertError as { code?: string }).code === '23505') {
+        const { data: existing, error: lookupError } = await supabase
+          .from('my_case_view')
+          .select('case_ref')
+          .eq('id', params.id)
+          .single();
+        if (lookupError) throw insertError;
+        caseRef = (existing as { case_ref: string }).case_ref;
+      } else {
+        throw insertError;
+      }
+    } else {
+      caseRef = (data as { case_ref: string }).case_ref;
     }
 
-    return { case_ref: (data as { case_ref: string }).case_ref };
+    let mediaFailed = false;
+    try {
+      let i = 0;
+      for (const p of params.photos ?? []) {
+        const ext = p.uri.split('.').pop()?.toLowerCase() === 'png' ? 'png' : 'jpg';
+        await uploadOne(params.id, 'photo', p.uri, ext, ext === 'png' ? 'image/png' : 'image/jpeg', p.size, 0, i++);
+      }
+      for (const v of params.videos ?? []) {
+        await uploadOne(params.id, 'video', v.uri, 'mp4', 'video/mp4', v.size, v.durationSeconds, i++);
+      }
+      if (params.audio) {
+        await uploadOne(params.id, 'audio', params.audio.uri, 'm4a', 'audio/x-m4a', params.audio.size, params.audio.durationSeconds, i++);
+      }
+    } catch {
+      mediaFailed = true;
+    }
+
+    return mediaFailed ? { case_ref: caseRef, mediaFailed } : { case_ref: caseRef };
   } catch (err) {
-    // T-INT-3: clean up uploaded files if the report insert failed
-    for (const path of uploadedPaths) {
-      await supabase.storage.from('evidence').remove([path]);
-    }
-
-    // Surface user-facing messages
-    const msg = err instanceof Error ? err.message : '';
-    if (
-      msg.includes('rate_limit_reports') ||
-      msg.includes('rate limit')
-    ) {
+    const msg = err instanceof Error ? err.message : String((err as { message?: string })?.message ?? '');
+    if (msg.includes('rate_limit_reports') || msg.includes('rate limit')) {
       throw new Error("You're sending reports too quickly. Try again later.");
     }
-    if (
-      msg.includes('NetworkError') ||
-      msg.includes('Failed to fetch') ||
-      msg.includes('network') ||
-      msg.includes('offline')
-    ) {
-      throw new Error(
-        'Network connection lost. Your report draft has been saved locally.',
-      );
+    if (isNetworkError(msg)) {
+      throw new Error('Network connection lost. Your report draft has been saved locally.');
     }
-    throw err;
+    throw err instanceof Error ? err : new Error(msg || 'Something went wrong. Try again.');
   }
 }
 
@@ -191,5 +186,6 @@ export async function submitDraft(draft: ReportDraft): Promise<{ case_ref: strin
     locationLng: draft.locationLng,
     locationText: draft.locationText,
     sapsCase: draft.sapsCase,
+    ...(draft.mediaJson ? JSON.parse(draft.mediaJson) : {}),
   });
 }
