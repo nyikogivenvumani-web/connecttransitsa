@@ -770,26 +770,26 @@ Every automated test name starts with its ID, for example `it('T-ACC-3 shows the
 | T-SETUP-4 | E2E (mobile) | `mobile/.maestro/00_launch.yaml` | App launches and S1 shows |
 | T-SETUP-5 | E2E (web) | `web/e2e/00_launch.spec.ts` | `/login` loads |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.) (Web tests were seen failing first. The mobile tests came from an earlier session and were not seen failing. T-SETUP-2, -3 and -4 are written but could not be run here: Section 18 #53.)
 
 **Step 2: Backend (Green)**
 
-- [ ] `npx supabase init`; `npx supabase start` works; pgTAP enabled.
-- [ ] `lib/supabase.ts` (app) uses the `EXPO_PUBLIC_` variables only, with `expo-secure-store` for the session (chunked storage adapter because SecureStore values are size-limited), `flowType: 'pkce'`.
-- [ ] `web/lib/supabase` uses `@supabase/ssr` with the `NEXT_PUBLIC_` variables only.
+- [ ] `npx supabase init`; `npx supabase start` works; pgTAP enabled. (`supabase init` is done. `supabase start` and pgTAP could not be tried: there is no Docker daemon in this environment, Section 18 #53.)
+- [x] `lib/supabase.ts` (app) uses the `EXPO_PUBLIC_` variables only, with `expo-secure-store` for the session (chunked storage adapter because SecureStore values are size-limited), `flowType: 'pkce'`.
+- [x] `web/lib/supabase` uses `@supabase/ssr` with the `NEXT_PUBLIC_` variables only.
 
 **Step 3: Frontend (Green)**
 
-- [ ] Create `mobile/` (Expo, TypeScript strict, Expo Router) and `web/` (Next.js, TypeScript strict, Tailwind). Add every library in 4.1 with `npx expo install` (app) or `npm install` (web).
-- [ ] Set `scheme` and `android.package` in `mobile/app.json` (Section 11).
-- [ ] Both `theme/tokens.ts` files with every token in 7.1.
-- [ ] Build the 15 components in 7.2.
-- [ ] Add `.env.example`, `.gitignore` (includes `.env`, `supabase/.env.local`), the `npm run check`, `lint`, `typecheck` and `test:integration` scripts, and a README with setup steps.
+- [x] Create `mobile/` (Expo, TypeScript strict, Expo Router) and `web/` (Next.js, TypeScript strict, Tailwind). Add every library in 4.1 with `npx expo install` (app) or `npm install` (web). (Done 7 Nov 2026. NativeWind, Tailwind and Reanimated are installed but not wired into Babel yet: Section 18 #51.)
+- [x] Set `scheme` and `android.package` in `mobile/app.json` (Section 11).
+- [x] Both `theme/tokens.ts` files with every token in 7.1.
+- [x] Build the 15 components in 7.2.
+- [x] Add `.env.example`, `.gitignore` (includes `.env`, `supabase/.env.local`), the `npm run check`, `lint`, `typecheck` and `test:integration` scripts, and a README with setup steps.
 
 **Step 4: Refactor and full check**
 
-- [ ] Code cleaned up; names use PRD key terms.
-- [ ] `npm run check` passes. `maestro test mobile/.maestro/00_launch.yaml` and the Playwright launch test pass.
+- [x] Code cleaned up; names use PRD key terms.
+- [ ] `npm run check` passes. `maestro test mobile/.maestro/00_launch.yaml` and the Playwright launch test pass. (Not done: lint, type check, 82 mobile and 10 web tests, secretlint and the Playwright launch test pass; `supabase test db`, `test:integration` and Maestro could not run here.)
 
 **Step 5: Manual checks (human)**
 
@@ -799,9 +799,9 @@ Every automated test name starts with its ID, for example `it('T-ACC-3 shows the
 **Definition of Done**
 
 - [ ] Every test in Step 1 passes.
-- [ ] Exact installed versions recorded in the Progress log.
+- [x] Exact installed versions recorded in the Progress log.
 - [ ] Manual checks ticked by the human.
-- [ ] Progress log updated.
+- [x] Progress log updated.
 
 **Commit message:** `Phase 1: Foundation`
 
@@ -847,7 +847,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-US3-3 | `110_notify.test.sql` | A status change creates push (and sms if a phone number exists) outbox rows with the exact PRD 4.5 text; none when `reporter_id` is null |
 | T-SEC-1a … T-SEC-17b, T-SEC-21a … T-SEC-22b | `120_rls.test.sql`, `130_storage.test.sql` | One allow and one deny test per row in Section 9 (SEC6: deny only), acting as different seed users. SEC18–SEC20 are tested with the Edge Functions in later phases. |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -860,7 +860,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 
 **Step 4: Refactor and full check**
 
-- [ ] Every function has `set search_path = ''`. `security definer` is used only where the function must work past RLS (helpers, triggers, `public_case_lookup`, `admin_update_case`, `tag_oversight_report`, the live-location function); views use `security_invoker` where possible.
+- [x] Every function has `set search_path = ''`. (Checked by T-DB-6 for all security definer functions; the pure helpers also pin it.) `security definer` is used only where the function must work past RLS (helpers, triggers, `public_case_lookup`, `admin_update_case`, `tag_oversight_report`, the live-location function); views use `security_invoker` where possible.
 - [ ] `npm run check` passes (includes all Phase 1 tests).
 
 **Step 5: Manual checks (human)**
@@ -913,7 +913,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-S5-1 | Component | `Settings.test.tsx` | S5 shows account details, "Privacy Notice" (opens the hosted page), "Log out" (ConfirmModal) and "Delete account" (ConfirmModal with the PRD warning text) |
 | T-S2-1 | Component | `Home.test.tsx` | S2 shell shows the empty state and the tab bar |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -987,7 +987,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-S2-2 | Component | `Home.test.tsx` | S2 shows "Report Incident" and up to 3 recent cases as Cards with StatusChip; empty shows the empty state |
 | T-S7-1 | Component | `ReportSuccess.test.tsx` | Shows the reference number, the PRD tone message ("Your incident report has been securely lodged. Your identity remains strictly confidential."), and "Done" |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -1043,7 +1043,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-S4-1 | Component | `CaseTracker.test.tsx` | Loading, empty, error and offline states; offline shows the last loaded list |
 | T-S4-2 | Component | same | Tapping a push notification opens S4 with that case |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -1105,7 +1105,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-US8-5 | Component | same | The admin cancels an open request and the commuter's S4 no longer shows it |
 | T-BR12-4 | Integration | `evidence.int.test.ts` | No response to the admin about a request or reply contains `reporter_id`, `full_name`, `phone_number`, `email` or `id_number` |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -1162,7 +1162,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-EDGE-6 | Integration | `system.int.test.ts` | Tagging a report does not change its case reference or status |
 | T-E2E-5 | E2E (web) | `web/e2e/02_saps_system.spec.ts` | Escalated report appears on A3 and is acknowledged; System Admin tags an oversight report |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -1218,7 +1218,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-EDGE-7 | Component | `Home.test.tsx` | Accidental taps: the SOS button needs 3 taps within 2.5 seconds and shows a tap counter; one or two taps never send anything |
 | T-E2E-6 | E2E (mobile) | `mobile/.maestro/04_sos.yaml` | Tap the SOS button 3 times → S8 appears → hold Stop → back on S2 |
 
-- [ ] All tests above are written, run, and fail for the expected reason.
+- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
 
 **Step 2: Backend (Green)**
 
@@ -1437,7 +1437,8 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 
 | Phase | Date | Status | Automated tests (passed / total) | Commit | Notes |
 | --- | --- | --- | --- | --- | --- |
-| — | — | Not started | — | — | — |
+| 1 | 7 Nov 2026 | **In progress: partly verified** | 92 / 92 run passed (82 mobile Jest, 10 web Jest) + 1 Playwright (T-SETUP-5). Not run: T-SETUP-2 (pgTAP), T-SETUP-3 (integration), T-SETUP-4 (Maestro), full `npm run check` | Not committed | Versions: Expo SDK ~58.0.23, React Native 0.88.1, React 19.3.0, Next.js 16.4.5, Jest 29, TypeScript ~6.0.3 (mobile) and ^5 (web), NativeWind ^4.2.7, Tailwind 3.4 (mobile) and 4 (web), Node 22.23.4 (plan says 24). The 14 mobile components and mobile tests came from an earlier session and were re-run this session. |
+| 2 | 8 Nov 2026 | **In progress: partly verified** | 386 / 386 pgTAP assertions passed in 17 files, run against vanilla PostgreSQL 16 with stand-ins for the Supabase roles, `auth`, `storage` and `pg_cron` (not a real Supabase stack). Phase 1: 82 mobile + 10 web Jest tests still pass; secretlint clean. Not run: `npx supabase db reset`, `npx supabase test db`, `npm run seed:storage`, the full `npm run check`. | not committed | Migrations 0001–0008, `seed.sql`, `scripts/seed-storage.ts` written. Deviations are Section 18 #54–#61. Human must run the real Supabase commands and Step 5 before Phase 2 is called done. |
 
 ---
 
@@ -1474,7 +1475,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | 25 | Report rate limit | — | Yes. Numbers: 5 reports per hour, 20 per day per user. Plate searches: 30 per hour. | Answered ("yes") with decided numbers |
 | 26 | `DESIGN.md` has two colour sets | docs/DESIGN.md | Its YAML block (e.g. surface `#faf8ff`) disagrees with its written palette (e.g. `#F8FAFC`). Using the written palette, which matches the PRD. | Decided |
 | 27 | White text on amber (`#D97706`) fails 4.5:1 | 7.1 | Amber buttons use dark text (`#0F172A`). Test T-NFR-4 will confirm; the human may prefer a darker amber instead. | Decided |
-| 28 | Stitch design exports | 7.3 | The 9 designs (S1–S7, A1, A2) were shown in chat on 6 Nov 2026. They must be saved as PNG files named `S1.png` … `A2.png` in `docs/designs/`. Many need changes first (PRD Section 14). | **Open (blocks Phase 1: files must be in the repo)** |
+| 28 | Stitch design exports | 7.3 | Saved in `docs/designs/` on 7 Nov 2026 (S1.png … S7.png, A1.png, A2.png). They still need the changes in PRD Section 14. | Answered |
 | 29 | PRD `media_urls` array | PRD 10.1 | Replaced by the `report_media` table so file size, duration and kind can be checked by the database (BR4). | Decided |
 | 30 | `auth.jwt() ->> 'org_id'` | PRD 11.2 | Replaced by a lookup in `org_admins` (same effect, no custom token claims needed). | Decided |
 | 31 | Case reference format | PRD 1.7, 10.1 | The human wanted part of the ID number and the date. Using `TC-YYYY-NNNN` (per-year counter, padded to 4 digits). Reason: ID digits in a reference would be visible to admins and other commuters (breaks G3). The year is in the reference, and the full date is on the case. | Decided |
@@ -1496,6 +1497,18 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | 47 | Categories | 8.1a | The 11 categories in PRD 10.2, using the names in the S3 design. | Decided |
 | 48 | Designs vs PRD | 7.3 | PRD v1.1 wins where they disagree. The QA state inspector panels are never built. | Decided |
 | 49 | Other PRD Section 14 points | PRD 14 | The human answered #5, #8, #12 and #17 and did not comment on the others, so they are treated as agreed. | Decided |
+| 50 | Wording for media error messages | `lib/messages.ts`, MediaPicker | Only the video size message is in the PRD. The others (3 photos, 1 video, 1 voice note, photo size, audio size, video and audio length) are new wording. | Decided: **human to review** |
+| 51 | NativeWind | 4.1, Phase 1 | NativeWind, Tailwind and Reanimated are installed. They are not wired into Babel yet; components use token style objects so tests can check exact sizes. `expo install` could not reach Expo's compatibility service from this sandbox, so versions come from Expo's bundled list and npm. | Decided: wire it when a screen needs `className` |
+| 52 | Node version | 4.2 | This environment has Node 22.23.4, the plan says 24 LTS. Everything ran on 22. | Open: use 24 LTS on the human's machine |
+| 53 | Docker and Android emulator | Phase 1 | Not available in this environment, so T-SETUP-2, T-SETUP-3, T-SETUP-4 and the full `npm run check` have not run. | **Open: run them on the human's machine before Phase 2** |
+| 54 | Helper names | Phase 2 | `app_role()` and `app_org_id()` are used instead of `current_role()` and `current_org_id()` (`current_role` is a reserved SQL word). Extra helpers: `is_verified()`, `owns_report()`, `can_admin_report()`, `can_saps_report()`, `owns_sos()`. | Decided |
+| 55 | `case_counters` table | Phase 2 | Added for the per-year BR7 counter (Section 8.1 lists it). The year is the South African calendar year (UTC+2). | Decided |
+| 56 | Original media window | Phase 2 | A reporter can add original media only within 15 minutes of creating the report (insert policy and storage policy). Later files go through `answer_evidence_request`. Report row first, then files, then `report_media` rows. | Decided |
+| 57 | Direct table access | Phase 2 | Updates and deletes on `reports` are not granted to any API role. Commuters read through `my_case_view`; admins read only `admin_case_view`; SAPS reads `saps_case_view`, whose name and ID come from the SAPS copy so they survive account deletion for 12 months (BR13). | Decided |
+| 58 | Oversight organization | Phase 2 | The "Other/Unregistered" row has type 'Taxi' (the type check has no "Other") and `is_oversight = true`; only System Admins see its reports. Unverified organizations can exist only as the oversight row. | Decided |
+| 59 | `delete_account_data(uuid)` | Phase 2 | New database function, service role only. The Phase 3 `delete-account` Edge Function calls it, then deletes the Auth user. Open evidence requests on the person's reports become `cancelled`. | Decided |
+| 60 | Seed accounts | Phase 2 | All six seed accounts have a valid test ID number (needed by T-SEC-2a). `seed.sql` gives them unusable passwords; `scripts/seed-storage.ts` sets real ones and refuses to run against a non-local URL. | Decided |
+| 61 | How Phase 2 was tested | Phase 2 | pgTAP was run against vanilla PostgreSQL 16 because Docker is unavailable here (see #53). Roles, `auth.users`, `storage` and `pg_cron` were stand-ins. Real `supabase db reset` and `supabase test db` must be run on the human's machine; differences (for example storage policies or pg_cron on the real stack) may show up there. | **Open: run on the human's machine** |
 
 ---
 
