@@ -913,7 +913,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-S5-1 | Component | `Settings.test.tsx` | S5 shows account details, "Privacy Notice" (opens the hosted page), "Log out" (ConfirmModal) and "Delete account" (ConfirmModal with the PRD warning text) |
 | T-S2-1 | Component | `Home.test.tsx` | S2 shell shows the empty state and the tab bar |
 
-- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
+- [ ] All tests above are written, run, and fail for the expected reason.
 
 **Step 2: Backend (Green)**
 
@@ -987,7 +987,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-S2-2 | Component | `Home.test.tsx` | S2 shows "Report Incident" and up to 3 recent cases as Cards with StatusChip; empty shows the empty state |
 | T-S7-1 | Component | `ReportSuccess.test.tsx` | Shows the reference number, the PRD tone message ("Your incident report has been securely lodged. Your identity remains strictly confidential."), and "Done" |
 
-- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
+- [ ] All tests above are written, run, and fail for the expected reason.
 
 **Step 2: Backend (Green)**
 
@@ -1043,7 +1043,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-S4-1 | Component | `CaseTracker.test.tsx` | Loading, empty, error and offline states; offline shows the last loaded list |
 | T-S4-2 | Component | same | Tapping a push notification opens S4 with that case |
 
-- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
+- [ ] All tests above are written, run, and fail for the expected reason.
 
 **Step 2: Backend (Green)**
 
@@ -1105,7 +1105,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-US8-5 | Component | same | The admin cancels an open request and the commuter's S4 no longer shows it |
 | T-BR12-4 | Integration | `evidence.int.test.ts` | No response to the admin about a request or reply contains `reporter_id`, `full_name`, `phone_number`, `email` or `id_number` |
 
-- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
+- [ ] All tests above are written, run, and fail for the expected reason.
 
 **Step 2: Backend (Green)**
 
@@ -1162,7 +1162,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-EDGE-6 | Integration | `system.int.test.ts` | Tagging a report does not change its case reference or status |
 | T-E2E-5 | E2E (web) | `web/e2e/02_saps_system.spec.ts` | Escalated report appears on A3 and is acknowledged; System Admin tags an oversight report |
 
-- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
+- [ ] All tests above are written, run, and fail for the expected reason.
 
 **Step 2: Backend (Green)**
 
@@ -1218,7 +1218,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | T-EDGE-7 | Component | `Home.test.tsx` | Accidental taps: the SOS button needs 3 taps within 2.5 seconds and shows a tap counter; one or two taps never send anything |
 | T-E2E-6 | E2E (mobile) | `mobile/.maestro/04_sos.yaml` | Tap the SOS button 3 times → S8 appears → hold Stop → back on S2 |
 
-- [x] All tests above are written, run, and fail for the expected reason. (Run 8 Nov 2026 before any migration existed: every file failed with missing tables or functions.)
+- [ ] All tests above are written, run, and fail for the expected reason.
 
 **Step 2: Backend (Green)**
 
@@ -1439,6 +1439,8 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | --- | --- | --- | --- | --- | --- |
 | 1 | 7 Nov 2026 | **In progress: partly verified** | 92 / 92 run passed (82 mobile Jest, 10 web Jest) + 1 Playwright (T-SETUP-5). Not run: T-SETUP-2 (pgTAP), T-SETUP-3 (integration), T-SETUP-4 (Maestro), full `npm run check` | Not committed | Versions: Expo SDK ~58.0.23, React Native 0.88.1, React 19.3.0, Next.js 16.4.5, Jest 29, TypeScript ~6.0.3 (mobile) and ^5 (web), NativeWind ^4.2.7, Tailwind 3.4 (mobile) and 4 (web), Node 22.23.4 (plan says 24). The 14 mobile components and mobile tests came from an earlier session and were re-run this session. |
 | 2 | 8 Nov 2026 | **In progress: partly verified** | 386 / 386 pgTAP assertions passed in 17 files, run against vanilla PostgreSQL 16 with stand-ins for the Supabase roles, `auth`, `storage` and `pg_cron` (not a real Supabase stack). Phase 1: 82 mobile + 10 web Jest tests still pass; secretlint clean. Not run: `npx supabase db reset`, `npx supabase test db`, `npm run seed:storage`, the full `npm run check`. | not committed | Migrations 0001–0008, `seed.sql`, `scripts/seed-storage.ts` written. Deviations are Section 18 #54–#61. Human must run the real Supabase commands and Step 5 before Phase 2 is called done. |
+| 3 | 8 Nov 2026 | **Built by Antigravity; not verified here** | Mobile Jest suite passes with Phase 4 (see Phase 4 row). Not run: Supabase Auth/SMS hook, `delete-account`, Clickatell, biometric on a device | merged (PR #2) | Antigravity pushed Phase 3 code. A separate Phase 3 build existed only in a local session and was not used. |
+| 4 | 8 Nov 2026 | **In progress: partly verified** | 168 / 168 mobile Jest tests pass; `tsc --noEmit` and `eslint --max-warnings 0` clean. Not run: integration tests against a real Supabase stack, Maestro `02_report`, emulator check | see branch `phase-4` | Antigravity's Phase 4 completed: Home S2, Select option IDs, ConfirmModal `cancelLabel`, OtpInput `testID`. `submitReport` now inserts the report first, then uploads to `{report_id}/{file}` and adds `report_media` rows (photo, video, audio). Offline drafts (with media) are resent on reconnect. |
 
 ---
 

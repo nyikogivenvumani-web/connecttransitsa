@@ -10,9 +10,10 @@ interface OtpInputProps {
   onChange: (value: string) => void;
   onResend: () => void;
   resendCooldownSeconds: number;
+  testID?: string;
 }
 
-export function OtpInput({ value, onChange, onResend, resendCooldownSeconds }: OtpInputProps) {
+export function OtpInput({ value, onChange, onResend, resendCooldownSeconds, testID }: OtpInputProps) {
   const inputs = useRef<(any | null)[]>([]);
   const digits = value.padEnd(OTP_LENGTH, '').slice(0, OTP_LENGTH).split('');
 
@@ -42,7 +43,7 @@ export function OtpInput({ value, onChange, onResend, resendCooldownSeconds }: O
   };
 
   return (
-    <View>
+    <View testID={testID}>
       <View style={styles.row}>
         {Array.from({ length: OTP_LENGTH }).map((_, i) => (
           <TextInput

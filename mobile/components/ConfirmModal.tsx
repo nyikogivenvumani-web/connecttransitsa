@@ -10,6 +10,7 @@ interface ConfirmModalProps {
   confirmLabel: string;
   onConfirm: () => void;
   onCancel: () => void;
+  cancelLabel?: string;
   danger?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function ConfirmModal({
   confirmLabel,
   onConfirm,
   onCancel,
+  cancelLabel,
   danger = false,
 }: ConfirmModalProps) {
   if (!visible) return null;
@@ -36,7 +38,7 @@ export function ConfirmModal({
               style={styles.cancelBtn}
               onPress={onCancel}
             >
-              <Text style={styles.cancelLabel}>{messages.cancel}</Text>
+              <Text style={styles.cancelLabel}>{cancelLabel ?? messages.cancel}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               testID="confirm-modal-confirm"
