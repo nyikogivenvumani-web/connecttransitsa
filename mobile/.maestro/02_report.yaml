@@ -1,0 +1,31 @@
+# T-E2E-2 (draft): requires a logged-in verified test commuter and test images on the emulator.
+appId: com.connecttransit.sa
+---
+- launchApp
+- assertVisible:
+    id: "screen-s2"
+- tapOn:
+    id: "home-report-btn"
+- tapOn:
+    id: "report-org-select-trigger"
+- tapOn:
+    id: "report-org-option-org-oversight"
+- inputText: "Test Operator"
+- tapOn:
+    id: "report-plate-input"
+- inputText: "CA 123 GP"
+- tapOn:
+    id: "report-category-select-trigger"
+- tapOn:
+    id: "report-category-option-Overcharging"
+- tapOn:
+    id: "report-description-input"
+- inputText: "Charged double the usual fare"
+- tapOn:
+    id: "report-submit-btn"
+- assertVisible:
+    id: "success-case-ref"
+- tapOn:
+    id: "success-done-btn"
+- assertVisible:
+    id: "screen-s2"

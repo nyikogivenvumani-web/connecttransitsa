@@ -5,6 +5,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import ReportSuccessScreen from '../../app/report/success';
 
+jest.mock('../../lib/push', () => ({ registerForPush: jest.fn(() => Promise.resolve(true)) }));
 const mockReplace = jest.fn();
 
 jest.mock('expo-router', () => ({

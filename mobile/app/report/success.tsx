@@ -2,15 +2,21 @@
  * app/report/success.tsx – S7 Report Success screen.
  * T-S7-1: Shows case reference, PRD tone message, and "Done" button.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { tokens } from '../../theme/tokens';
 import { Button } from '../../components/Button';
+import { registerForPush } from '../../lib/push';
 
 export default function ReportSuccessScreen() {
   const router = useRouter();
   const { case_ref } = useLocalSearchParams<{ case_ref: string }>();
+
+  // Ask for notification permission after the first report is submitted (Phase 5).
+  useEffect(() => {
+    registerForPush();
+  }, []);
 
   return (
     <View style={styles.container}>
