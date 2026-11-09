@@ -20,6 +20,10 @@ export interface CaseDetail {
   created_at: string;
   admin_decision: string | null;
   decision_reasoning: string | null;
+  evidence_request_id: string | null;
+  evidence_request_status: 'open' | 'answered' | 'cancelled' | 'closed_by_decision' | null;
+  evidence_request_message: string | null;
+  evidence_reply_note: string | null;
 }
 
 export interface PlateResult {
@@ -34,7 +38,7 @@ export interface PlateResult {
 }
 
 const COLUMNS =
-  'id, case_ref, status, vehicle_plate, category, description, organization_name, unlisted_entity_name, incident_at, created_at, admin_decision, decision_reasoning';
+  'id, case_ref, status, vehicle_plate, category, description, organization_name, unlisted_entity_name, incident_at, created_at, admin_decision, decision_reasoning, evidence_request_id, evidence_request_status, evidence_request_message, evidence_reply_note';
 
 let lastList: CaseDetail[] | null = null;
 /** Last successfully loaded "My cases" list, for offline display. */

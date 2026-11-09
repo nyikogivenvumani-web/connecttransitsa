@@ -28,7 +28,8 @@ const mk = (ref: string, status: string, extra = {}) => ({
   id: ref, case_ref: ref, status, vehicle_plate: 'CA 123 GP', category: 'Overcharging',
   description: 'Charged double', organization_name: 'DORLJOTA', unlisted_entity_name: null,
   incident_at: '2026-11-01T08:00:00Z', created_at: '2026-11-02T08:00:00Z',
-  admin_decision: null, decision_reasoning: null, ...extra,
+  admin_decision: null, decision_reasoning: null,
+  evidence_request_id: null, evidence_request_status: null, evidence_request_message: null, evidence_reply_note: null, ...extra,
 });
 const api = casesApi as jest.Mocked<typeof casesApi>;
 

@@ -27,6 +27,8 @@ it('inserts the report before uploading and uses {report_id}/ paths', async () =
   expect(upload.mock.calls[0][0]).toMatch(/^r1\/photo-/);
   expect(upload.mock.calls[1][0]).toMatch(/^r1\/audio-/);
   expect(mediaInsert).toHaveBeenCalledWith(expect.objectContaining({ kind: 'audio', duration_seconds: 12 }));
+  // The database rejects a duration on photos (photo_has_duration).
+  expect(mediaInsert).toHaveBeenCalledWith(expect.objectContaining({ kind: 'photo', duration_seconds: null }));
 });
 
 it('uploads nothing when the report insert fails', async () => {

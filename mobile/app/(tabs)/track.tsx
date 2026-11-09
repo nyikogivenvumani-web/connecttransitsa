@@ -8,6 +8,7 @@ import { Card } from '../../components/Card';
 import { StatusChip, ReportStatus } from '../../components/StatusChip';
 import { StatusTimeline } from '../../components/StatusTimeline';
 import { EmptyState } from '../../components/EmptyState';
+import { EvidenceReply } from '../../components/EvidenceReply';
 import { Skeleton } from '../../components/Skeleton';
 import { TextField } from '../../components/TextField';
 import {
@@ -145,6 +146,9 @@ export default function TrackScreen() {
                 <Text style={styles.bold}>{c.case_ref}</Text>
                 <Text style={styles.text}>{c.category} · {c.vehicle_plate}</Text>
                 <StatusChip status={c.status as ReportStatus} />
+                {c.evidence_request_status === 'open' && (
+                  <Text testID={`track-evidence-tag-${c.case_ref}`} style={styles.tag}>Evidence requested</Text>
+                )}
               </Card>
             </TouchableOpacity>
           ))}
@@ -171,6 +175,17 @@ export default function TrackScreen() {
               <Text style={styles.text}>{detail.unlisted_entity_name ?? detail.organization_name}</Text>
               <Text style={styles.text}>{detail.description}</Text>
               <Decision decision={detail.admin_decision} reasoning={detail.decision_reasoning} />
+              {detail.evidence_request_status === 'open' && detail.evidence_request_id && (
+                <EvidenceReply
+                  requestId={detail.evidence_request_id}
+                  reportId={detail.id}
+                  message={detail.evidence_request_message ?? ''}
+                  onDone={() => { openRef(detail.case_ref); load(); }}
+                />
+              )}
+              {detail.evidence_request_status === 'answered' && (
+                <Text style={styles.text}>Your reply was sent.</Text>
+              )}
             </Card>
           )}
 
@@ -199,6 +214,7 @@ const styles = StyleSheet.create({
   tabActive: { color: tokens.color.text, fontWeight: '700' },
   bold: { fontWeight: '700', color: tokens.color.text },
   text: { color: tokens.color.text },
+  tag: { color: tokens.color.warning, fontWeight: '700' },
   decision: { marginTop: tokens.space[1], gap: 4 },
   offline: { color: tokens.color.text, backgroundColor: tokens.color.info, padding: tokens.space[1] },
 });
