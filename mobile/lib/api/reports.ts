@@ -72,7 +72,7 @@ async function uploadOne(
   ext: string,
   contentType: string,
   size: number,
-  durationSeconds: number,
+  durationSeconds: number | null,
   index: number,
 ): Promise<void> {
   // Phase 2 storage policy: object name must be `{report_id}/{file}`.
@@ -146,7 +146,7 @@ export async function submitReport(
       let i = 0;
       for (const p of params.photos ?? []) {
         const ext = p.uri.split('.').pop()?.toLowerCase() === 'png' ? 'png' : 'jpg';
-        await uploadOne(params.id, 'photo', p.uri, ext, ext === 'png' ? 'image/png' : 'image/jpeg', p.size, 0, i++);
+        await uploadOne(params.id, 'photo', p.uri, ext, ext === 'png' ? 'image/png' : 'image/jpeg', p.size, null, i++);
       }
       for (const v of params.videos ?? []) {
         await uploadOne(params.id, 'video', v.uri, 'mp4', 'video/mp4', v.size, v.durationSeconds, i++);
