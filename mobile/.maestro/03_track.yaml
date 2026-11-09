@@ -1,0 +1,16 @@
+# T-E2E-3 (draft): requires a logged-in test commuter who already has at least one case.
+appId: com.connecttransit.sa
+---
+- launchApp
+- tapOn: "Track Cases"
+- assertVisible:
+    id: "screen-s4"
+- tapOn:
+    id: "track-mode-search"
+- tapOn:
+    id: "track-search-input"
+- inputText: "CA 123 GP"
+- tapOn:
+    id: "track-search-btn"
+- assertVisible:
+    id: "track-plate-result-0"

@@ -6,6 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { supabase } from '../lib/supabase';
 import { isSessionExpired } from '../lib/rules/session';
 import { signOut } from '../lib/api/auth';
+import * as Notifications from 'expo-notifications';
+import { caseRefFromNotification } from '../lib/push';
 import type { Session } from '@supabase/supabase-js';
 
 SplashScreen.preventAutoHideAsync();
@@ -23,6 +25,15 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+
+  // Tapping a push notification opens S4 with that case (T-S4-2).
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const ref = caseRefFromNotification(response);
+      if (ref) router.push({ pathname: '/(tabs)/track', params: { case_ref: ref } });
+    });
+    return () => sub.remove();
+  }, [router]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
