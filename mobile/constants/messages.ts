@@ -55,4 +55,21 @@ export const messages = {
 
   // Description privacy helper (PRD Section 14 #18)
   descriptionHelper: 'Do not include your name or contact details.',
+
+  // Report incident (Phase 4 – F1, F2)
+  reportRateLimit: "You're sending reports too quickly. Try again later.",
+  reportNetworkOffline: 'Network connection lost. Your report draft has been saved locally.',
+  reportPlateRequired: 'Vehicle registration plate is required',
+  reportVideoTooLarge: 'File too large. Video must be under 25MB.',
+  reportPhotoTooLarge: 'File too large. Photo must be under 5MB.',
+  reportAudioTooLarge: 'File too large. Audio must be under 10MB.',
+
+  // Report success (Phase 4 – S7)
+  reportSuccessMessage:
+    'Your incident report has been securely lodged. Your identity remains strictly confidential.',
+
+  // Leave report guard (T-S3-2)
+  leaveReportTitle: 'Leave report?',
+  leaveReportMessage: 'Your unsaved report will be lost. Are you sure?',
+  leaveReportConfirm: 'Leave',
 } as const;

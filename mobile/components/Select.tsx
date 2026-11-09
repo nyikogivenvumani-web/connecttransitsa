@@ -48,8 +48,10 @@ export function Select({ options, value, onChange, placeholder = 'Select…', te
           <FlatList
             data={options}
             keyExtractor={(item) => item.value}
+            initialNumToRender={options.length}
             renderItem={({ item }) => (
               <TouchableOpacity
+                testID={testID ? `${testID}-option-${item.value}` : undefined}
                 style={styles.option}
                 onPress={() => {
                   onChange(item.value);
