@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { dispatchNotification, type OutboxRow } from '../_shared/dispatch.ts';
+import { isAuthorizedWebhook } from '../_shared/webhookAuth.ts';
 
 /**
  * dispatch-notification: called by the Database Webhook on INSERT into notification_outbox.
@@ -9,8 +10,7 @@ import { dispatchNotification, type OutboxRow } from '../_shared/dispatch.ts';
  */
 serve(async (req) => {
   if (req.method !== 'POST') return new Response('Method Not Allowed', { status: 405 });
-  const secret = Deno.env.get('DISPATCH_WEBHOOK_SECRET');
-  if (!secret || req.headers.get('x-webhook-secret') !== secret) {
+  if (!isAuthorizedWebhook(req.headers.get('x-webhook-secret'), Deno.env.get('DISPATCH_WEBHOOK_SECRET'))) {
     return new Response('Unauthorized', { status: 401 });
   }
 
