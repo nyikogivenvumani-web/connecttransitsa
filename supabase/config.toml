@@ -422,3 +422,9 @@ enabled = true
 # Phase 5: called by the Database Webhook on notification_outbox; authenticated by x-webhook-secret, not a user JWT.
 [functions.dispatch-notification]
 verify_jwt = false
+
+# Phase 7: dispatch-saps is called by a Database Webhook (secret header). create-admin-user checks the caller's role itself.
+[functions.dispatch-saps]
+verify_jwt = false
+[functions.create-admin-user]
+verify_jwt = true
