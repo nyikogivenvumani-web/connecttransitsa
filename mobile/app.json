@@ -29,7 +29,15 @@
       "expo-font",
       "expo-audio",
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "locationAlwaysAndWhenInUsePermission": "ConnectTransit SA shares your location with SAPS while an SOS is active."
+        }
+      ]
     ]
   }
 }

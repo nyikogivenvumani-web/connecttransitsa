@@ -1,0 +1,19 @@
+# T-E2E-6 (draft, not yet run): logged-in verified commuter on S2; location permission already granted.
+appId: com.connecttransit.sa
+---
+- launchApp
+- assertVisible:
+    id: "screen-s2"
+- tapOn:
+    id: "home-sos-btn"
+- tapOn:
+    id: "home-sos-btn"
+- tapOn:
+    id: "home-sos-btn"
+- assertVisible:
+    id: "screen-s8"
+- longPressOn:
+    id: "sos-stop-btn"
+    duration: 3500
+- assertVisible:
+    id: "screen-s2"

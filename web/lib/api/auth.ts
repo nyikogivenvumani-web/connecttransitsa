@@ -21,10 +21,10 @@ export async function signInAdmin(email: string, password: string): Promise<{ ro
 
 /**
  * Route guard. Returns a path to redirect to, or null to let the request through.
- * /login and /sos/* (public share page) are open.
+ * /login and /live/* (public share page) are open.
  */
 export function routeDecision(pathname: string, role: string | null): string | null {
-  if (pathname === '/login' || pathname.startsWith('/sos')) return null;
+  if (pathname === '/login' || pathname.startsWith('/live')) return null;
   const area = ['/admin', '/saps', '/system'].find((p) => pathname === p || pathname.startsWith(p + '/'));
   if (!area) return null;
   if (role !== 'transport_admin' && role !== 'saps' && role !== 'system_admin') return '/login';

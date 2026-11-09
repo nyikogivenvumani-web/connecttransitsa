@@ -428,3 +428,7 @@ verify_jwt = false
 verify_jwt = false
 [functions.create-admin-user]
 verify_jwt = true
+
+# Phase 8: sos-start needs the caller's JWT.
+[functions.sos-start]
+verify_jwt = true
