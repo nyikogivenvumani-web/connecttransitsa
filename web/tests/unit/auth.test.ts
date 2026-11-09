@@ -45,6 +45,6 @@ describe('routeDecision (middleware guard)', () => {
   it('rejects commuters', () => expect(routeDecision('/admin', 'commuter')).toBe('/login'));
   it('leaves /login and public pages alone', () => {
     expect(routeDecision('/login', null)).toBeNull();
-    expect(routeDecision('/sos/abc', null)).toBeNull();
+    expect(routeDecision('/live/abc', null)).toBeNull();
   });
 });
