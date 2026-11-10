@@ -122,5 +122,6 @@ select tests.as_user(tests.u('thabo'));
 select is(tests.affected($q$delete from storage.objects where name = '$q$ || tests.rep(1) || $q$/seed.jpg'$q$), 0::bigint, 'T-SEC-16b nobody deletes evidence through the API');
 select is(tests.affected($q$update storage.objects set name = '$q$ || tests.rep(1) || $q$/renamed.jpg' where name = '$q$ || tests.rep(1) || $q$/seed.jpg'$q$), 0::bigint, 'T-SEC-16b or renames it');
 
+select tests.as_postgres();
 select * from finish();
 rollback;
