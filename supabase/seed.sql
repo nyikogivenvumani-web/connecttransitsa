@@ -27,6 +27,17 @@ update auth.users set confirmation_token = '', recovery_token = '', email_change
 insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 select id::text, id, jsonb_build_object('sub', id::text, 'email', email, 'email_verified', true), 'email', now(), now(), now() from auth.users;
 
+-- GoTrue cannot read NULL in these text columns (login fails with a 500 "converting NULL to string"), so seed them as empty strings.
+update auth.users set
+  confirmation_token = coalesce(confirmation_token, ''),
+  recovery_token = coalesce(recovery_token, ''),
+  email_change = coalesce(email_change, ''),
+  email_change_token_new = coalesce(email_change_token_new, ''),
+  email_change_token_current = coalesce(email_change_token_current, ''),
+  phone_change = coalesce(phone_change, ''),
+  phone_change_token = coalesce(phone_change_token, ''),
+  reauthentication_token = coalesce(reauthentication_token, '');
+
 insert into public.org_admins (user_id, organization_id) values
   ('00000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000001'),
   ('00000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000002');
