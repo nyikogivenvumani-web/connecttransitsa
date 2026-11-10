@@ -1,4 +1,4 @@
-appId: com.connecttransit.sa
+appId: za.co.connecttransit
 ---
 - launchApp
 - assertVisible:

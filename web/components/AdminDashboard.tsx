@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DataTable } from './DataTable';
-import { fetchAdminCases, isNetworkError, AdminCase } from '../lib/api/admin';
+import { fetchAdminCases, isNetworkError, AdminCase, PAGE_SIZE } from '../lib/api/admin';
 import { tokens } from '../theme/tokens';
 import { page, container, card, input, button, errorText, muted } from './ui';
 
@@ -24,6 +24,7 @@ export function AdminDashboard() {
   const [offline, setOffline] = useState(false);
   const [filter, setFilter] = useState('');
 
+  const [limit, setLimit] = useState(PAGE_SIZE);
   const [version, setVersion] = useState(0);
   const reload = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -31,7 +32,7 @@ export function AdminDashboard() {
     let alive = true;
     (async () => {
       try {
-        const list = await fetchAdminCases();
+        const list = await fetchAdminCases(limit);
         if (!alive) return;
         setCases(list);
         setError(null);
@@ -44,7 +45,7 @@ export function AdminDashboard() {
       }
     })();
     return () => { alive = false; };
-  }, [version]);
+  }, [version, limit]);
 
   useEffect(() => {
     const off = () => setOffline(true);
@@ -87,6 +88,9 @@ export function AdminDashboard() {
         {cases !== null && !error && rows.length === 0 && !offline && <p data-testid="admin-empty" style={muted}>No cases found.</p>}
         {rows.length > 0 && (
           <DataTable columns={COLUMNS} rows={rows} onRowClick={(r) => router.push(`/admin/cases/${r.id}`)} />
+        )}
+        {cases && cases.length >= limit && (
+          <button data-testid="load-more" style={button()} onClick={() => setLimit((n) => n + PAGE_SIZE)}>Load more</button>
         )}
       </div>
     </main>

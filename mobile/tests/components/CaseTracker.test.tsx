@@ -20,6 +20,7 @@ jest.mock('expo-router', () => ({
 
 let mockNetListener: ((s: { isConnected: boolean }) => void) | null = null;
 jest.mock('@react-native-community/netinfo', () => ({
+  useNetInfo: () => ({ isConnected: true }),
   addEventListener: jest.fn((cb) => { mockNetListener = cb; return jest.fn(); }),
   fetch: jest.fn(() => Promise.resolve({ isConnected: true })),
 }));

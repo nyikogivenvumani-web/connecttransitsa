@@ -37,7 +37,10 @@
           "isAndroidForegroundServiceEnabled": true,
           "locationAlwaysAndWhenInUsePermission": "ConnectTransit SA shares your location with SAPS while an SOS is active."
         }
-      ]
+      ],
+      "expo-notifications",
+      "expo-image-picker",
+      "expo-local-authentication"
     ]
   }
 }

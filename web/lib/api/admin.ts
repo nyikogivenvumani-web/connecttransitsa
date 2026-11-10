@@ -60,8 +60,10 @@ export function friendlyError(e: unknown): Error {
   return new Error(GENERIC);
 }
 
-export async function fetchAdminCases(): Promise<AdminCase[]> {
-  const { data, error } = await supabase.from('admin_case_view').select(COLUMNS).order('created_at', { ascending: false });
+export const PAGE_SIZE = 20;
+
+export async function fetchAdminCases(limit: number = PAGE_SIZE): Promise<AdminCase[]> {
+  const { data, error } = await supabase.from('admin_case_view').select(COLUMNS).order('created_at', { ascending: false }).limit(limit);
   if (error) throw friendlyError(error);
   return data as AdminCase[];
 }

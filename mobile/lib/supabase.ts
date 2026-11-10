@@ -13,6 +13,12 @@ import * as SecureStore from 'expo-secure-store';
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'mock-anon-key';
 
+if (!process.env.EXPO_PUBLIC_SUPABASE_URL || !process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
+  // Without these the app points at a placeholder server and sign-in cannot work.
+  // Set them in mobile/.env (or EAS env vars for a build) and restart with `expo start -c`.
+  console.warn('EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY are not set.');
+}
+
 // Chunk size safely under SecureStore's ~2 KB key limit.
 const CHUNK_SIZE = 1900;
 

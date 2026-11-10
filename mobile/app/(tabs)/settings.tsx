@@ -9,6 +9,8 @@ import {
   Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import NetInfo from '@react-native-community/netinfo';
+import { OfflineBanner } from '../../components/OfflineBanner';
 import { tokens } from '../../theme/tokens';
 import { ConfirmModal } from '../../components/ConfirmModal';
 import { supabase } from '../../lib/supabase';
@@ -23,6 +25,7 @@ import {
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const offline = NetInfo.useNetInfo().isConnected === false;
   const [profile, setProfile] = useState<{ full_name: string; email?: string; phone_number?: string } | null>(null);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
@@ -92,6 +95,7 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <OfflineBanner />
       <Text style={styles.title}>Settings and Profile</Text>
 
       {/* Account Info */}
@@ -122,6 +126,7 @@ export default function SettingsScreen() {
             <Text style={styles.rowLabel}>Biometric Sign-In</Text>
             <Switch
               testID="settings-biometric-switch"
+              disabled={offline}
               value={biometricEnabled}
               onValueChange={handleBiometricToggle}
               trackColor={{ true: tokens.color.primary, false: tokens.color.border }}
@@ -156,6 +161,7 @@ export default function SettingsScreen() {
           testID="settings-delete-account-btn"
           style={[styles.actionBtn, { borderTopWidth: 1, borderTopColor: tokens.color.border }]}
           onPress={() => setDeleteVisible(true)}
+          disabled={offline}
         >
           <Text style={styles.deleteText}>{messages.deleteAccountTitle}</Text>
         </TouchableOpacity>
