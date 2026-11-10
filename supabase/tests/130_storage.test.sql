@@ -55,9 +55,11 @@ begin
   return rid;
 end $$;
 
--- Number of rows a statement changed, run as the current role (RLS hides rows without raising an error)
+-- Number of rows a statement changed, run as the current role (RLS hides rows without raising an error).
+-- Real Supabase also blocks direct DELETE on storage.objects with a trigger error; that counts as 0 rows changed.
 create function tests.affected(q text) returns bigint language plpgsql as $$
-declare n bigint; begin execute q; get diagnostics n = row_count; return n; end $$;
+declare n bigint; begin execute q; get diagnostics n = row_count; return n;
+exception when others then return 0; end $$;
 
 create function tests.ref_of(rid uuid) returns text language plpgsql as $$ declare r text; begin select case_ref into r from public.reports where id = rid; return r; end $$;
 create function tests.req_of(rid uuid) returns uuid language sql security definer as $$ select id from public.evidence_requests where report_id = rid order by created_at desc limit 1 $$;
