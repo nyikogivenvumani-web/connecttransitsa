@@ -228,6 +228,10 @@ max_frequency = "1s"
 # Number of characters used in the email OTP.
 otp_length = 6
 
+[auth.email.template.confirmation]
+subject = "Your ConnectTransit SA code"
+content_path = "./supabase/templates/confirmation.html"
+
 # Use a production-ready SMTP server
 # [auth.email.smtp]
 # enabled = true
