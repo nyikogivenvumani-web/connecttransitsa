@@ -70,7 +70,7 @@ cd web && npm run dev                # web portals (http://localhost:3000)
 
 ```sh
 npx supabase db reset
-npx tsx --env-file=.env scripts/seed-storage.ts
+npx tsx --env-file=.env scripts/seed-storage.mts
 ```
 
 | Role | Email | Password |
