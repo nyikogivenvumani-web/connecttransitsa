@@ -12,7 +12,8 @@ jest.mock('../../lib/api/cases', () => ({
 }));
 jest.mock('../../lib/api/evidence', () => ({ ...jest.requireActual('../../lib/api/evidence'), answerEvidenceRequest: jest.fn() }));
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: jest.fn() }), useLocalSearchParams: () => ({}) }));
-jest.mock('@react-native-community/netinfo', () => ({ addEventListener: jest.fn(() => jest.fn()) }));
+jest.mock('@react-native-community/netinfo', () => ({
+  useNetInfo: () => ({ isConnected: true }), addEventListener: jest.fn(() => jest.fn()) }));
 jest.mock('../../components/MediaPicker', () => {
   const { TouchableOpacity, Text } = jest.requireActual('react-native');
   return {

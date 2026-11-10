@@ -26,6 +26,7 @@ import HomeScreen from '../../app/(tabs)/index';
 jest.mock('../../lib/api/reports');
 jest.mock('../../lib/db/drafts');
 jest.mock('@react-native-community/netinfo', () => ({
+  useNetInfo: () => ({ isConnected: true }),
   addEventListener: jest.fn(() => jest.fn()),
   fetch: jest.fn(() => Promise.resolve({ isConnected: true })),
 }));
@@ -121,6 +122,22 @@ describe('HomeScreen – S2 (Phase 4 additions)', () => {
 // ─────────────────────────────────────────────────────────────────────────
 // S3 Report Incident
 // ─────────────────────────────────────────────────────────────────────────
+describe('T-EDGE-5 login expires while writing a report', () => {
+  it('keeps the draft, says "Please log in again." and goes to S1', async () => {
+    (reportsApi.submitReport as jest.Mock).mockRejectedValue(new Error('Please log in again.'));
+    const view = await render(<ReportIncidentScreen />);
+    await fireEvent.press(view.getByTestId('report-org-select-trigger'));
+    await fireEvent.press(await view.findByTestId('report-org-option-org-1'));
+    await fireEvent.changeText(view.getByTestId('report-plate-input'), 'CA 123 GP');
+    await fireEvent.press(view.getByTestId('report-category-select-trigger'));
+    await fireEvent.press(view.getByTestId('report-category-option-Overcharging'));
+    await fireEvent.changeText(view.getByTestId('report-description-input'), 'Charged double');
+    await fireEvent.press(view.getByTestId('report-submit-btn'));
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/(auth)/welcome'));
+    expect(require('../../lib/db/drafts').saveDraft).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('ReportIncidentScreen – S3', () => {
   // Helper: fill the minimum required fields
   async function fillRequiredFields(getByTestId: ReturnType<typeof render>['getByTestId']) {

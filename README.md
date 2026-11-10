@@ -65,9 +65,19 @@ cd web && npm run dev                # web portals (http://localhost:3000)
 
 ## Test accounts (after seed)
 
+`supabase db reset` creates the accounts with unusable passwords. Set real ones with the seed script
+(needs `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `SEED_TEST_PASSWORD` in the root `.env`):
+
+```sh
+npx supabase db reset
+npx tsx --env-file=.env scripts/seed-storage.mts
+```
+
 | Role | Email | Password |
 |------|-------|----------|
-| Commuter | commuter@test.connecttransit.co.za | `$SEED_TEST_PASSWORD` |
-| Transport Admin | admin@dorljota.co.za | `$SEED_TEST_PASSWORD` |
-| SAPS | saps@test.gov.za | `$SEED_TEST_PASSWORD` |
-| System Admin | sysadmin@connecttransit.co.za | `$SEED_TEST_PASSWORD` |
+| Commuter | thabo@example.co.za | `$SEED_TEST_PASSWORD` |
+| Commuter | lerato@example.co.za | `$SEED_TEST_PASSWORD` |
+| Transport Admin (DORLJOTA) | sipho@example.co.za | `$SEED_TEST_PASSWORD` |
+| Transport Admin (Metrobus) | nomsa@example.co.za | `$SEED_TEST_PASSWORD` |
+| SAPS | saps.dispatch@example.co.za | `$SEED_TEST_PASSWORD` |
+| System Admin | sysadmin@example.co.za | `$SEED_TEST_PASSWORD` |

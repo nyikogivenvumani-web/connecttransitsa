@@ -1,5 +1,5 @@
 # T-E2E-3 (draft): requires a logged-in test commuter who already has at least one case.
-appId: com.connecttransit.sa
+appId: za.co.connecttransit
 ---
 - launchApp
 - tapOn: "Track Cases"

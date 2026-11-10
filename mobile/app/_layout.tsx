@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { supabase } from '../lib/supabase';
 import { isSessionExpired } from '../lib/rules/session';
 import { signOut } from '../lib/api/auth';
+import '../lib/sosTask'; // registers the background location task
 import * as Notifications from 'expo-notifications';
 import { caseRefFromNotification } from '../lib/push';
 import type { Session } from '@supabase/supabase-js';
@@ -36,9 +37,10 @@ export default function RootLayout() {
   }, [router]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      handleSession(data.session);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => handleSession(data.session))
+      .catch(() => handleSession(null));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       handleSession(s);

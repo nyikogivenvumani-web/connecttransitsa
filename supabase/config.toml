@@ -176,10 +176,8 @@ enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
-minimum_password_length = 6
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
 # are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
-password_requirements = ""
 
 # Configure passkey sign-ins.
 # [auth.passkey]
@@ -229,8 +227,6 @@ secure_password_change = false
 max_frequency = "1s"
 # Number of characters used in the email OTP.
 otp_length = 6
-# Number of seconds before the email OTP expires (defaults to 1 hour).
-otp_expiry = 3600
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
@@ -255,7 +251,6 @@ otp_expiry = 3600
 
 [auth.sms]
 enabled = true
-enable_signup = true
 # Allow/disallow the phone provider. When false, users can't sign up or sign in with SMS.
 # To block new signups only, set enable_signup = false under [auth] instead.
 # If enabled, users need to confirm their phone number before signing in.
@@ -427,4 +422,8 @@ verify_jwt = false
 [functions.dispatch-saps]
 verify_jwt = false
 [functions.create-admin-user]
+verify_jwt = true
+
+# Phase 8: sos-start needs the caller's JWT.
+[functions.sos-start]
 verify_jwt = true

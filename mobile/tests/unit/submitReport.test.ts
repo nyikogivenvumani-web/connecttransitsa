@@ -43,3 +43,8 @@ it('keeps the report and flags mediaFailed when an upload fails', async () => {
   const r = await submitReport({ ...base, photos: [{ uri: 'a.jpg', size: 10 }] });
   expect(r).toEqual({ case_ref: 'TC-2026-0001', mediaFailed: true });
 });
+
+it('T-EDGE-5 turns an expired login into "Please log in again."', async () => {
+  reportResult = { data: null, error: { status: 401, message: 'JWT expired' } };
+  await expect(submitReport(base)).rejects.toThrow('Please log in again.');
+});

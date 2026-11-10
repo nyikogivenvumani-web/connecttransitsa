@@ -9,11 +9,12 @@ import { StatusChip, ReportStatus } from '../../components/StatusChip';
 import { StatusTimeline } from '../../components/StatusTimeline';
 import { EmptyState } from '../../components/EmptyState';
 import { EvidenceReply } from '../../components/EvidenceReply';
+import { OfflineBanner } from '../../components/OfflineBanner';
 import { Skeleton } from '../../components/Skeleton';
 import { TextField } from '../../components/TextField';
 import {
   CaseDetail, PlateResult, NOT_FOUND_MESSAGE, REFERENCE_PATTERN, MIN_PLATE_CHARS,
-  fetchAllMyCases, fetchCaseByRef, searchByPlate, getCachedCases, setCachedCases,
+  PAGE_SIZE, fetchAllMyCases, fetchCaseByRef, searchByPlate, getCachedCases, setCachedCases,
 } from '../../lib/api/cases';
 import { messages } from '../../constants/messages';
 
@@ -38,6 +39,7 @@ export default function TrackScreen() {
   const [loading, setLoading] = useState(getCachedCases() === null);
   const [error, setError] = useState<string | null>(null);
   const [offline, setOffline] = useState(false);
+  const [limit, setLimit] = useState(PAGE_SIZE);
 
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
@@ -48,7 +50,7 @@ export default function TrackScreen() {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const list = await fetchAllMyCases();
+      const list = await fetchAllMyCases(limit);
       setCachedCases(list);
       setCases(list);
       setOffline(false);
@@ -62,7 +64,7 @@ export default function TrackScreen() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [limit]);
 
   useEffect(() => {
     load();
@@ -117,6 +119,7 @@ export default function TrackScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} testID="screen-s4">
+      <OfflineBanner />
       {offline && <Text testID="track-offline" style={styles.offline}>{messages.offlineGeneral}</Text>}
 
       <View style={styles.tabs}>
@@ -152,6 +155,9 @@ export default function TrackScreen() {
               </Card>
             </TouchableOpacity>
           ))}
+          {cases && cases.length >= limit && (
+            <Button testID="track-load-more" variant="secondary" label="Load more" onPress={() => setLimit((n) => n + PAGE_SIZE)} />
+          )}
         </>
       )}
 

@@ -4,6 +4,7 @@
  */
 import { supabase } from '../supabase';
 import type { ReportDraft } from '../db/drafts';
+import { friendlyMessage, isAuthError, AUTH_EXPIRED_MESSAGE } from '../errors';
 
 export interface Organization {
   id: string;
@@ -81,7 +82,7 @@ async function uploadOne(
   const { error } = await supabase.storage
     .from('evidence')
     .upload(path, blob, { contentType });
-  if (error) throw error;
+  if (error) throw new Error(friendlyMessage(error));
   const { error: rowError } = await supabase.from('report_media').insert({
     report_id: reportId,
     kind,
@@ -160,6 +161,7 @@ export async function submitReport(
 
     return mediaFailed ? { case_ref: caseRef, mediaFailed } : { case_ref: caseRef };
   } catch (err) {
+    if (isAuthError(err)) throw new Error(AUTH_EXPIRED_MESSAGE);
     const msg = err instanceof Error ? err.message : String((err as { message?: string })?.message ?? '');
     if (msg.includes('rate_limit_reports') || msg.includes('rate limit')) {
       throw new Error("You're sending reports too quickly. Try again later.");
@@ -167,7 +169,7 @@ export async function submitReport(
     if (isNetworkError(msg)) {
       throw new Error('Network connection lost. Your report draft has been saved locally.');
     }
-    throw err instanceof Error ? err : new Error(msg || 'Something went wrong. Try again.');
+    throw new Error(friendlyMessage(err));
   }
 }
 
