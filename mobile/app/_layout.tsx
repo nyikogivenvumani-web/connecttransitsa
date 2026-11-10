@@ -37,9 +37,10 @@ export default function RootLayout() {
   }, [router]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      handleSession(data.session);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => handleSession(data.session))
+      .catch(() => handleSession(null));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
       handleSession(s);

@@ -1,5 +1,5 @@
 # T-E2E-2 (draft): requires a logged-in verified test commuter and test images on the emulator.
-appId: com.connecttransit.sa
+appId: za.co.connecttransit
 ---
 - launchApp
 - assertVisible:
