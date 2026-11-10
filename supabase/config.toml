@@ -266,8 +266,13 @@ max_frequency = "5s"
 
 # Use pre-defined map of phone number to OTP for testing.
 # Keys are the phone number with country code and without the + prefix.
-# [auth.sms.test_otp]
-# 14152127777 = "123456"
+# Local dev has no SMS provider, so real texts never arrive. These fake numbers always accept code 123456.
+# Sign up in the app with +27820000011 (or 12, 13) and enter 123456. Keys are the number without the +.
+# For a real number, add it here, or configure a provider in [auth.sms.twilio] for production.
+[auth.sms.test_otp]
+27820000011 = "123456"
+27820000012 = "123456"
+27820000013 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]

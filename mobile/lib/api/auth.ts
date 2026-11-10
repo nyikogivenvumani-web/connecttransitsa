@@ -7,6 +7,11 @@ import { validatePassword } from '../rules/password';
 import { messages } from '../../constants/messages';
 import { friendlyMessage } from '../errors';
 
+// In development builds, append the server's real message so setup problems are visible on screen.
+function devDetail(message: string, error: { message?: string }): string {
+  return __DEV__ && error.message ? `${message} [${error.message}]` : message;
+}
+
 export interface SignUpParams {
   email?: string;
   phone?: string;
@@ -51,7 +56,7 @@ export async function signUpWithEmail(params: SignUpParams) {
     if (error.message.includes('rate limit')) {
       throw new Error('Too many attempts. Try again in 15 minutes.');
     }
-    throw new Error(friendlyMessage(error));
+    throw new Error(devDetail(friendlyMessage(error), error));
   }
 
   return data;
@@ -82,7 +87,7 @@ export async function signUpWithPhone(params: SignUpParams) {
     },
   });
 
-  if (error) throw new Error(friendlyMessage(error));
+  if (error) throw new Error(devDetail(friendlyMessage(error), error));
   return data;
 }
 
