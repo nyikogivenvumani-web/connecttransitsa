@@ -12,7 +12,7 @@ export type ReportStatus =
 const STATUS_COLOR: Record<ReportStatus, { bg: string; text: string }> = {
   Submitted: { bg: '#EFF6FF', text: '#1D4ED8' },
   'Under Review': { bg: '#FFFBEB', text: '#B45309' },
-  Escalated: { bg: '#FEF2F2', text: tokens.color.danger },
+  Escalated: { bg: '#FEF2F2', text: '#B91C1C' },
   Resolved: { bg: '#F0FDF4', text: '#15803D' },
   Dismissed: { bg: '#F8FAFC', text: tokens.color.textMuted },
 };

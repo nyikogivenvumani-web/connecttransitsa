@@ -55,6 +55,8 @@ export function TextField({
           <TouchableOpacity
             testID={testID ? `${testID}-eye` : undefined}
             onPress={() => setHidden((h) => !h)}
+            accessibilityRole="button"
+            accessibilityLabel={hidden ? 'Show password' : 'Hide password'}
             style={styles.eye}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
@@ -108,7 +110,10 @@ const styles = StyleSheet.create({
     fontFamily: tokens.font.family,
   },
   eye: {
-    padding: tokens.space.tight,
+    minWidth: tokens.size.touchMin,
+    minHeight: tokens.size.touchMin,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   eyeText: {
     fontSize: 18,

@@ -9,6 +9,7 @@ module.exports = {
     '<rootDir>/tests/unit/**/*.test.tsx',
     '<rootDir>/tests/components/**/*.test.tsx',
   ],
+  setupFiles: ['<rootDir>/tests/setup.ts'],
   moduleDirectories: ['node_modules', '<rootDir>/node_modules'],
   moduleNameMapper: {
     // Mock NativeWind styled utility in tests

@@ -5,6 +5,7 @@ import { supabase } from '../supabase';
 import { validateSaId, saIdStatus } from '../rules/saId';
 import { validatePassword } from '../rules/password';
 import { messages } from '../../constants/messages';
+import { friendlyMessage } from '../errors';
 
 export interface SignUpParams {
   email?: string;
@@ -50,7 +51,7 @@ export async function signUpWithEmail(params: SignUpParams) {
     if (error.message.includes('rate limit')) {
       throw new Error('Too many attempts. Try again in 15 minutes.');
     }
-    throw error;
+    throw new Error(friendlyMessage(error));
   }
 
   return data;
@@ -81,7 +82,7 @@ export async function signUpWithPhone(params: SignUpParams) {
     },
   });
 
-  if (error) throw error;
+  if (error) throw new Error(friendlyMessage(error));
   return data;
 }
 
@@ -122,7 +123,7 @@ export async function signIn(emailOrPhone: string, password?: string) {
     const { data, error } = await supabase.auth.signInWithOtp({
       phone: emailOrPhone,
     });
-    if (error) throw error;
+    if (error) throw new Error(friendlyMessage(error));
     return data;
   }
 }
@@ -137,7 +138,7 @@ export async function updatePassword(newPassword: string) {
     throw new Error('Password must be at least 8 characters and include uppercase, lowercase, and a digit.');
   }
   const { data, error } = await supabase.auth.updateUser({ password: newPassword });
-  if (error) throw error;
+  if (error) throw new Error(friendlyMessage(error));
   return data;
 }
 
@@ -147,7 +148,7 @@ export async function signOut() {
 
 export async function deleteAccount() {
   const { data, error } = await supabase.functions.invoke('delete-account');
-  if (error) throw error;
+  if (error) throw new Error(friendlyMessage(error));
   await supabase.auth.signOut();
   return data;
 }

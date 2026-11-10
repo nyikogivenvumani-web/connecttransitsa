@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { tokens } from '../../theme/tokens';
 import { Button } from '../../components/Button';
+import { SosButton } from '../../components/SosButton';
+import { sosSession } from '../../lib/sosSession';
 import { Card } from '../../components/Card';
 import { StatusChip } from '../../components/StatusChip';
 import { EmptyState } from '../../components/EmptyState';
@@ -31,10 +33,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     load();
+    // After login, send any report saved while the login had expired or the phone was offline (T-EDGE-5).
+    retryPendingDrafts().then((sent) => { if (sent > 0) load(); }).catch(() => undefined);
     const unsub = NetInfo.addEventListener((state) => {
       const isOffline = state.isConnected === false;
       setOffline(isOffline);
       if (!isOffline) {
+        void sosSession.onReconnect();
         retryPendingDrafts()
           .then((sent) => { if (sent > 0) load(); })
           .catch(() => undefined);
@@ -45,12 +50,19 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} testID="screen-s2">
-      {offline && <OfflineBanner />}
+      <OfflineBanner />
       <Button
         testID="home-report-btn"
         variant="primary"
         label="Report Incident"
         onPress={() => router.push('/report/new')}
+      />
+      <SosButton
+        testID="home-sos-btn"
+        onTrigger={() => {
+          void sosSession.start(Date.now());
+          router.push('/sos/active');
+        }}
       />
       <Text style={styles.title}>Recent cases</Text>
       {cases === null && <Skeleton shape="card" testID="home-loading" />}

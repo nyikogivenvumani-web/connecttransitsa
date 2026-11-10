@@ -1,5 +1,5 @@
 -- ConnectTransit SA seed: placeholder organizations, six test accounts and six test reports. TEST DATA ONLY: replace the organizations with the verified list before release.
--- Accounts get an unusable password here; scripts/seed-storage.ts sets real ones from SEED_TEST_PASSWORD.
+-- Accounts get an unusable password here; scripts/seed-storage.mts sets real ones from SEED_TEST_PASSWORD.
 insert into public.organizations (id, name, type, is_oversight) values
   ('10000000-0000-0000-0000-000000000001', 'DORLJOTA', 'Taxi', false),
   ('10000000-0000-0000-0000-000000000002', 'Metrobus', 'Bus', false),

@@ -6,7 +6,8 @@
     "lint": "npm run lint --prefix mobile && npm run lint --prefix web",
     "typecheck": "npm run typecheck --prefix mobile && npm run typecheck --prefix web",
     "test:integration": "node --env-file=.env node_modules/jest/bin/jest.js -c jest.integration.config.js",
-    "check": "npm run lint && npm run typecheck && npm run test --prefix mobile && npm run test --prefix web && npx supabase test db && npm run test:integration"
+    "check": "npm run lint && npm run typecheck && npm run test --prefix mobile && npm run test --prefix web && npx supabase test db && npm run test:integration",
+    "secretlint": "secretlint \"**/*\" --secretlintignore .secretlintignore"
   },
   "devDependencies": {
     "jest": "^30.5.2",
