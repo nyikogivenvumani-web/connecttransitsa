@@ -120,7 +120,10 @@ export async function signIn(emailOrPhone: string, password?: string) {
       if (error.message.includes('Email not confirmed')) {
         throw new Error('Please verify your email first.');
       }
-      throw new Error('Incorrect email or password.');
+      const isBadLogin = (error as { code?: string }).code === 'invalid_credentials' || /invalid login credentials/i.test(error.message);
+      if (isBadLogin) throw new Error('Incorrect email or password.');
+      // Anything else (server down, database error, rate limit) is not a wrong password.
+      throw new Error(devDetail(friendlyMessage(error), error));
     }
     return data;
   } else {

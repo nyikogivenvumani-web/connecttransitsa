@@ -217,6 +217,10 @@ export default function WelcomeScreen() {
             value={fullName}
             onChangeText={setFullName}
             placeholder="Your full name"
+            autoComplete="name"
+            textContentType="name"
+            autoCapitalize="words"
+            secureTextEntry={false}
           />
 
           <TextField
