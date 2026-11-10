@@ -22,6 +22,8 @@ insert into auth.users (instance_id, id, aud, role, email, phone, email_confirme
     '{"provider":"email","providers":["email"],"role":"saps"}', '{"full_name":"SAPS Dispatch","id_number":"7909095009085"}'),
   ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000006', 'authenticated', 'authenticated', 'sysadmin@example.co.za', null, now(), null, md5(random()::text),
     '{"provider":"email","providers":["email"],"role":"system_admin"}', '{"full_name":"System Admin","id_number":"7010105009080"}');
+-- GoTrue fails to read users whose token columns are NULL ("Database error querying schema"), so seed them as empty strings.
+update auth.users set confirmation_token = '', recovery_token = '', email_change = '', email_change_token_new = '', email_change_token_current = '', phone_change = '', phone_change_token = '', reauthentication_token = '' where email like '%@example.co.za';
 insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 select id::text, id, jsonb_build_object('sub', id::text, 'email', email, 'email_verified', true), 'email', now(), now(), now() from auth.users;
 
