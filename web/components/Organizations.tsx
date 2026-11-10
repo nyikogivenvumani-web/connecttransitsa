@@ -112,7 +112,7 @@ export function Organizations() {
               </select>
             </label>
           )}
-          {adminMsg && <p role="status" style={adminMsg.ok ? { margin: 0, color: tokens.color.success } : errorText}>{adminMsg.text}</p>}
+          {adminMsg && <p role="status" style={adminMsg.ok ? { margin: 0, fontWeight: 600 } : errorText}>{adminMsg.text}</p>}
           <button data-testid="admin-create" disabled={adminInvalid || busy} style={button(adminInvalid || busy)} onClick={createAdmin}>Create account</button>
         </section>
       </div>

@@ -1,6 +1,6 @@
 /** SAPS portal API (OP19, OP20). Reads saps_queue directly (RLS: role saps only). */
 import { supabase } from '../supabase';
-import { friendlyError } from './admin';
+import { friendlyError, PAGE_SIZE } from './admin';
 
 export interface SapsItem {
   id: string;
@@ -19,12 +19,13 @@ export interface SapsItem {
   };
 }
 
-export async function fetchSapsQueue(): Promise<SapsItem[]> {
+export async function fetchSapsQueue(limit: number = PAGE_SIZE): Promise<SapsItem[]> {
   const { data, error } = await supabase
     .from('saps_queue')
     .select('id, status, webhook_status, created_at, payload')
     .eq('kind', 'report')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(limit);
   if (error) throw friendlyError(error);
   return data as SapsItem[];
 }

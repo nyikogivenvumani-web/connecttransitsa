@@ -25,7 +25,7 @@ import {
 import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 import * as Crypto from 'expo-crypto';
-import NetInfo from '@react-native-community/netinfo';
+import { OfflineBanner } from '../../components/OfflineBanner';
 
 import { tokens } from '../../theme/tokens';
 import { Select } from '../../components/Select';
@@ -35,6 +35,7 @@ import { Button } from '../../components/Button';
 
 import { fetchOrganizations, submitReport, Organization } from '../../lib/api/reports';
 import { saveDraft } from '../../lib/db/drafts';
+import { AUTH_EXPIRED_MESSAGE } from '../../lib/errors';
 import { canAddPhoto, validatePhoto, canAddVideo, validateVideo, canAddAudio } from '../../lib/rules/media';
 
 const CATEGORIES = [
@@ -160,8 +161,8 @@ export default function ReportIncidentScreen() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Something went wrong. Try again.';
 
-      // T-EDGE-1: save draft on network failure
-      if (msg.includes('Network connection lost')) {
+      // T-EDGE-1 (network) and T-EDGE-5 (login expired): keep the draft on the phone
+      if (msg.includes('Network connection lost') || msg === AUTH_EXPIRED_MESSAGE) {
         await saveDraft({
           id,
           organizationId: orgId!,
@@ -180,6 +181,7 @@ export default function ReportIncidentScreen() {
       }
 
       setSubmitError(msg);
+      if (msg === AUTH_EXPIRED_MESSAGE) router.replace('/(auth)/welcome');
     } finally {
       setSubmitting(false);
     }
@@ -231,6 +233,7 @@ export default function ReportIncidentScreen() {
   // ── Render ──────────────────────────────────────────────────────────────
   return (
     <View style={styles.root}>
+      <OfflineBanner isReportScreen />
       {/* Back button */}
       <TouchableOpacity
         testID="report-back-btn"

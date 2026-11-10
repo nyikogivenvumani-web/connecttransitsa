@@ -33,6 +33,8 @@ export default function HomeScreen() {
 
   useEffect(() => {
     load();
+    // After login, send any report saved while the login had expired or the phone was offline (T-EDGE-5).
+    retryPendingDrafts().then((sent) => { if (sent > 0) load(); }).catch(() => undefined);
     const unsub = NetInfo.addEventListener((state) => {
       const isOffline = state.isConnected === false;
       setOffline(isOffline);
@@ -48,7 +50,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} testID="screen-s2">
-      {offline && <OfflineBanner />}
+      <OfflineBanner />
       <Button
         testID="home-report-btn"
         variant="primary"
