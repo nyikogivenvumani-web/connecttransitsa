@@ -175,7 +175,7 @@ Install Expo packages with `npx expo install <package>` so their versions match 
 | --- | --- |
 | Install dependencies | `npm install` in the repo root, `mobile/` and `web/` |
 | Start the local backend | `npx supabase start` |
-| Reset the database (migrations + seed) | `npx supabase db reset` then `npm run seed:storage` (= `node --env-file=.env scripts/seed-storage.ts`) |
+| Reset the database (migrations + seed) | `npx supabase db reset` then `npm run seed:storage` (= `node --env-file=.env scripts/seed-storage.mts`) |
 | Serve server functions locally | `npx supabase functions serve --env-file supabase/.env.local` |
 | Start the commuter app | `cd mobile && npx expo start` |
 | Start the web portals | `cd web && npm run dev` |
@@ -239,7 +239,7 @@ connecttransit-sa/
     tests/                          pgTAP tests (T-SEC, T-BR, T-DB)
     seed.sql                        Seed rows (Section 8.7)
     config.toml
-  scripts/seed-storage.ts           Uploads seed evidence files (uses the secret key; never in the apps)
+  scripts/seed-storage.mts           Uploads seed evidence files (uses the secret key; never in the apps)
   docs/PRD.md  docs/DESIGN.md  docs/designs/
   IMPLEMENTATION_PLAN.md  .env.example  README.md
 ```
@@ -256,7 +256,7 @@ connecttransit-sa/
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Public (anon) key | Same | Public (safe only because every table and bucket has RLS) | Commuter app |
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Same two values for the web app | Same | Public | Web app |
 | `SUPABASE_URL` | Supabase address as the computer sees it (`http://127.0.0.1:54321`) | `npx supabase status` | Public | Integration tests and scripts only |
-| `SUPABASE_SERVICE_ROLE_KEY` | Admin (service role) key | Same | **Secret** | `scripts/seed-storage.ts` and integration tests only. Edge Functions get it from Supabase automatically. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Admin (service role) key | Same | **Secret** | `scripts/seed-storage.mts` and integration tests only. Edge Functions get it from Supabase automatically. |
 | `SEED_TEST_PASSWORD` | Password for all seed test accounts | You choose it | **Secret** | Seed script, integration tests, Maestro, Playwright |
 | `CLICKATELL_API_KEY` | Clickatell API key | Clickatell account | **Secret** | Edge Function secrets only (`npx supabase secrets set`) |
 | `SEND_SMS_HOOK_SECRET` | Secret Supabase uses to sign the Send SMS hook call | Supabase dashboard (Auth hooks) | **Secret** | Edge Function `send-sms-otp` only |
@@ -852,7 +852,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 **Step 2: Backend (Green)**
 
 - [ ] Migrations `0001` to `0008` exactly as in Section 8.6, applied with `npx supabase db reset`.
-- [ ] `supabase/seed.sql` and `scripts/seed-storage.ts` load the seed data in 8.7 (`npm run seed:storage`).
+- [ ] `supabase/seed.sql` and `scripts/seed-storage.mts` load the seed data in 8.7 (`npm run seed:storage`).
 
 **Step 3: Frontend (Green)**
 
@@ -1438,7 +1438,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | Phase | Date | Status | Automated tests (passed / total) | Commit | Notes |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 7 Nov 2026 | **In progress: partly verified** | 92 / 92 run passed (82 mobile Jest, 10 web Jest) + 1 Playwright (T-SETUP-5). Not run: T-SETUP-2 (pgTAP), T-SETUP-3 (integration), T-SETUP-4 (Maestro), full `npm run check` | Not committed | Versions: Expo SDK ~58.0.23, React Native 0.88.1, React 19.3.0, Next.js 16.4.5, Jest 29, TypeScript ~6.0.3 (mobile) and ^5 (web), NativeWind ^4.2.7, Tailwind 3.4 (mobile) and 4 (web), Node 22.23.4 (plan says 24). The 14 mobile components and mobile tests came from an earlier session and were re-run this session. |
-| 2 | 8 Nov 2026 | **In progress: partly verified** | 386 / 386 pgTAP assertions passed in 17 files, run against vanilla PostgreSQL 16 with stand-ins for the Supabase roles, `auth`, `storage` and `pg_cron` (not a real Supabase stack). Phase 1: 82 mobile + 10 web Jest tests still pass; secretlint clean. Not run: `npx supabase db reset`, `npx supabase test db`, `npm run seed:storage`, the full `npm run check`. | not committed | Migrations 0001–0008, `seed.sql`, `scripts/seed-storage.ts` written. Deviations are Section 18 #54–#61. Human must run the real Supabase commands and Step 5 before Phase 2 is called done. |
+| 2 | 8 Nov 2026 | **In progress: partly verified** | 386 / 386 pgTAP assertions passed in 17 files, run against vanilla PostgreSQL 16 with stand-ins for the Supabase roles, `auth`, `storage` and `pg_cron` (not a real Supabase stack). Phase 1: 82 mobile + 10 web Jest tests still pass; secretlint clean. Not run: `npx supabase db reset`, `npx supabase test db`, `npm run seed:storage`, the full `npm run check`. | not committed | Migrations 0001–0008, `seed.sql`, `scripts/seed-storage.mts` written. Deviations are Section 18 #54–#61. Human must run the real Supabase commands and Step 5 before Phase 2 is called done. |
 | 3 | 8 Nov 2026 | **Built by Antigravity; not verified here** | Mobile Jest suite passes with Phase 4 (see Phase 4 row). Not run: Supabase Auth/SMS hook, `delete-account`, Clickatell, biometric on a device | merged (PR #2) | Antigravity pushed Phase 3 code. A separate Phase 3 build existed only in a local session and was not used. |
 | 4 | 8 Nov 2026 | **In progress: partly verified** | 168 / 168 mobile Jest tests pass; `tsc --noEmit` and `eslint --max-warnings 0` clean. Not run: integration tests against a real Supabase stack, Maestro `02_report`, emulator check | see branch `phase-4` | Antigravity's Phase 4 completed: Home S2, Select option IDs, ConfirmModal `cancelLabel`, OtpInput `testID`. `submitReport` now inserts the report first, then uploads to `{report_id}/{file}` and adds `report_media` rows (photo, video, audio). Offline drafts (with media) are resent on reconnect. |
 | 5 | 9 Nov 2026 | **In progress: partly verified** | 189 / 189 mobile Jest tests pass (all phases); `tsc --noEmit` and `eslint --max-warnings 0` clean. Not run: `cases.int`, `push.int`, `notify.int` against a real stack, Maestro `03_track`, real push/SMS | see branch `phase-5` | S4 (My cases, reference and plate search, offline cache, notification deep link), `lib/api/cases.ts`, `lib/push.ts`, `dispatch-notification` function (core tested with mocked Expo Push and Clickatell). Database Webhook must be created by the human (see the function README). No new migration. Offline list is cached in memory only, not across app restarts. |
@@ -1514,7 +1514,7 @@ All tests in this phase are pgTAP tests in `supabase/tests/`.
 | 57 | Direct table access | Phase 2 | Updates and deletes on `reports` are not granted to any API role. Commuters read through `my_case_view`; admins read only `admin_case_view`; SAPS reads `saps_case_view`, whose name and ID come from the SAPS copy so they survive account deletion for 12 months (BR13). | Decided |
 | 58 | Oversight organization | Phase 2 | The "Other/Unregistered" row has type 'Taxi' (the type check has no "Other") and `is_oversight = true`; only System Admins see its reports. Unverified organizations can exist only as the oversight row. | Decided |
 | 59 | `delete_account_data(uuid)` | Phase 2 | New database function, service role only. The Phase 3 `delete-account` Edge Function calls it, then deletes the Auth user. Open evidence requests on the person's reports become `cancelled`. | Decided |
-| 60 | Seed accounts | Phase 2 | All six seed accounts have a valid test ID number (needed by T-SEC-2a). `seed.sql` gives them unusable passwords; `scripts/seed-storage.ts` sets real ones and refuses to run against a non-local URL. | Decided |
+| 60 | Seed accounts | Phase 2 | All six seed accounts have a valid test ID number (needed by T-SEC-2a). `seed.sql` gives them unusable passwords; `scripts/seed-storage.mts` sets real ones and refuses to run against a non-local URL. | Decided |
 | 61 | How Phase 2 was tested | Phase 2 | pgTAP was run against vanilla PostgreSQL 16 because Docker is unavailable here (see #53). Roles, `auth.users`, `storage` and `pg_cron` were stand-ins. Real `supabase db reset` and `supabase test db` must be run on the human's machine; differences (for example storage policies or pg_cron on the real stack) may show up there. | **Open: run on the human's machine** |
 
 ---
