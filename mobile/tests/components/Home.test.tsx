@@ -7,7 +7,8 @@ import { sosSession } from '../../lib/sosSession';
 
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
-jest.mock('@react-native-community/netinfo', () => ({ addEventListener: jest.fn(() => jest.fn()) }));
+jest.mock('@react-native-community/netinfo', () => ({
+  useNetInfo: () => ({ isConnected: true }), addEventListener: jest.fn(() => jest.fn()) }));
 jest.mock('../../lib/api/reports');
 jest.mock('../../lib/offlineQueue', () => ({ retryPendingDrafts: jest.fn().mockResolvedValue(0) }));
 jest.mock('../../lib/sosSession', () => ({ sosSession: { start: jest.fn().mockResolvedValue(undefined) } }));

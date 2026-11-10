@@ -2,6 +2,7 @@
  * lib/api/cases.ts – OP8 (my cases), OP9 (by reference), OP11 (public plate lookup).
  */
 import { supabase } from '../supabase';
+import { friendlyMessage } from '../errors';
 
 export const NOT_FOUND_MESSAGE = 'Case reference number not found. Please check and try again.';
 export const SEARCH_RATE_MESSAGE = "You're searching too quickly. Try again later.";
@@ -55,12 +56,15 @@ export function __resetCaseCache(): void {
 export const REFERENCE_PATTERN = /^TC-\d{4}-\d{4,}$/i;
 export const MIN_PLATE_CHARS = 3;
 
-export async function fetchAllMyCases(): Promise<CaseDetail[]> {
+export const PAGE_SIZE = 20;
+
+export async function fetchAllMyCases(limit: number = PAGE_SIZE): Promise<CaseDetail[]> {
   const { data, error } = await supabase
     .from('my_case_view')
     .select(COLUMNS)
-    .order('created_at', { ascending: false });
-  if (error) throw new Error(error.message || GENERIC);
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(friendlyMessage(error));
   return data as CaseDetail[];
 }
 
@@ -70,7 +74,7 @@ export async function fetchCaseByRef(ref: string): Promise<CaseDetail | null> {
     .select(COLUMNS)
     .eq('case_ref', ref.trim().toUpperCase())
     .maybeSingle();
-  if (error) throw new Error(error.message || GENERIC);
+  if (error) throw new Error(friendlyMessage(error));
   return (data as CaseDetail | null) ?? null;
 }
 

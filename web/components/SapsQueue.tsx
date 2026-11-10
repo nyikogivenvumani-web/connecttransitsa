@@ -1,13 +1,15 @@
 'use client';
 import React, { useState } from 'react';
 import { fetchSapsQueue, acknowledgeEscalation } from '../lib/api/saps';
+import { PAGE_SIZE } from '../lib/api/admin';
 import { useLoad } from './useLoad';
 import { tokens } from '../theme/tokens';
 import { page, container, card, button, errorText, muted } from './ui';
 
 /** A3 – SAPS Escalation Queue. Shows the reporter's name and ID number (BR2: the only place they leave the system). */
 export function SapsQueue() {
-  const { data, error, offline, reload } = useLoad(fetchSapsQueue);
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  const { data, error, offline, reload } = useLoad(() => fetchSapsQueue(limit));
   const [actionError, setActionError] = useState<string | null>(null);
 
   const ack = async (id: string) => {
@@ -41,10 +43,13 @@ export function SapsQueue() {
             <div>ID number: {it.payload.reporter_id_number ?? 'Removed (retention period ended)'}</div>
             {it.webhook_status === 'failed' && <p style={errorText}>Delivery to SAPS failed</p>}
             {it.status === 'acknowledged'
-              ? <span style={{ color: tokens.color.success, fontWeight: 700 }}>Acknowledged</span>
+              ? <span style={{ fontWeight: 700 }}>Acknowledged</span>
               : <button data-testid={`saps-ack-${it.id}`} style={button()} onClick={() => ack(it.id)}>Acknowledge</button>}
           </section>
         ))}
+        {data && data.length >= limit && (
+          <button data-testid="load-more" style={button()} onClick={() => { setLimit((n) => n + PAGE_SIZE); reload(); }}>Load more</button>
+        )}
       </div>
     </main>
   );
